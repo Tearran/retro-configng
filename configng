@@ -7,7 +7,7 @@ json_file="$bin_dir/array.json"
 display_dialog() {
     local input=$(cat)
     local input="$1"
-    whiptail --title "Script Completed" --msgbox "The script has completed successfully. Output:\n\n$input" 20 78
+    whiptail --title "Script Completed" --msgbox "The script has completed successfully." 0 78
 }
 
 display_yes_no() {
@@ -27,13 +27,15 @@ display_yes_no() {
 
 execute_command() {
     local id=$1
+    local param=$2  # This is your new parameter
     [[ "$id" == "" ]] && exit 0
     local command=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .command' $json_file)
     command=${command:-null}  # If command is null or empty, set it to 'null'
     if [ "$command" != "null" ]; then
         # If it does, execute the command
         echo "About to execute command: $command"
-            /bin/$command
+        [[ -n "$param" ]] && echo "with parameter: $param"
+        /bin/$command $param  # Pass the parameter to the command
         return 0
     else
         # If command is 'null', print an error message and return a specific exit status
@@ -166,8 +168,7 @@ check_requirements "${requirements[@]}"
 
 generate_top_menu
 
-set_newt_colors 2
-
-
+set_newt_colors 4
+echo "The script has completed successfully." | display_dialog
 # Display a dialog box when the script completes
-whiptail --title "Script Completed" --msgbox "The script has completed successfully. Output:\n\n$output" 0 78
+#whiptail --title "Script Completed" --msgbox "The script has completed successfully. Output:\n\n$output" 0 78
