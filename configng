@@ -3,11 +3,14 @@ bin_dir="$(dirname "$(readlink -f "$BASH_SOURCE")")"
 # Define the path to the JSON file
 json_file="$bin_dir/array.json"
 
-
 display_dialog() {
-    local input=$(cat)
-    local input="$1"
-    whiptail --title "Script Completed" --msgbox "The script has completed successfully." 0 78
+    local input
+    if [ -p /dev/stdin ]; then
+        input=$(cat)
+    else
+        input="$1"
+    fi
+    whiptail --title "Script Completed" --msgbox "$input " 0 78
 }
 
 display_yes_no() {
@@ -30,12 +33,23 @@ execute_command() {
     local param=$2  # This is your new parameter
     [[ "$id" == "" ]] && exit 0
     local command=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .command' $json_file)
+    local requirements=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .requirements[]?' $json_file)
     command=${command:-null}  # If command is null or empty, set it to 'null'
     if [ "$command" != "null" ]; then
         # If it does, execute the command
         echo "About to execute command: $command"
         [[ -n "$param" ]] && echo "with parameter: $param"
-        /bin/$command $param  # Pass the parameter to the command
+
+        # Check requirements before executing the command
+        if check_requirements $requirements; then
+            $command $param   # Pass the parameter to the command
+        else
+            {
+                echo "Error: Requirements for command associated with ID '$id' are not met"
+                exit 1
+            } | display_dialog
+        fi
+        
         return 0
     else
         # If command is 'null', print an error message and return a specific exit status
@@ -46,6 +60,30 @@ execute_command() {
     fi 
 }
 
+execute_command_00() {
+    local id=$1
+    local param=$2  # This is your new parameter
+    [[ "$id" == "" ]] && exit 0
+    local command=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .command' $json_file)
+    command=${command:-null}  # If command is null or empty, set it to 'null'
+    if [ "$command" != "null" ]; then
+        # If it does, execute the command
+        echo "About to execute command: $command"
+        [[ -n "$param" ]] && echo "with parameter: $param"
+
+        $command $param   # Pass the parameter to the command
+        
+        return 0
+    else
+        # If command is 'null', print an error message and return a specific exit status
+        {
+            echo "Error: No command associated with ID '$id'"
+            exit 1
+        } | display_dialog
+    fi 
+}
+
+
 generate_menu() {
     local parent_id=$1
 
@@ -55,7 +93,8 @@ generate_menu() {
     do
         IFS= read -r description
         submenu_options+=("$id" "$description")
-    done < <(jq -r --arg parent_id "$parent_id" '.menu[] | .. | objects | select(.id==$parent_id) | .sub[]? | "\(.id)\n\(.description)"' $json_file)
+    done < <(jq -r --arg parent_id "$parent_id" '.menu[] | .. | objects | select(.id==$parent_id) | .sub[]? | select(.show==true) | "\(.id)\n\(.description)"' $json_file)
+ # done < <(jq -r --arg parent_id "$parent_id" '.menu[] | .. | objects | select(.id==$parent_id) | .sub[]? | "\(.id)\n\(.description)"' $json_file)
     
     set_newt_colors "$?"
     
@@ -167,8 +206,21 @@ check_requirements "${requirements[@]}"
 [[ "$1" == "--server" ]] && serve_debug ;
 
 generate_top_menu
+sleep 2
 
-set_newt_colors 4
-echo "The script has completed successfully." | display_dialog
+# test a dialog box with pipe
+
+# test a error background color, red
+set_newt_colors 3
+echo -e "The script has completed successfully. \n    Runing though other message tests" | display_dialog 
+
+# test a dialog box with Parmaeter
+# test a normal background color
+output=$(jq -r '.menu[] | "\(.id)\n\(.description)"' $json_file) 
+set_newt_colors 2
+display_dialog $output ;
+
+set_newt_colors 3
+# test a dialog box warning background color, yellow
 # Display a dialog box when the script completes
-#whiptail --title "Script Completed" --msgbox "The script has completed successfully. Output:\n\n$output" 0 78
+whiptail --title "Script Completed" --msgbox "The script has completed successfully. Output:\n\n$output" 0 78

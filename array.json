@@ -15,7 +15,7 @@
                     "id": "S2",
                     "description": "Test Echo2",
                     "command": "echo 'Hello Armbian'",
-                    "show": true,
+                    "show": false,
                     "requirements": []
                 }
             ]
@@ -47,7 +47,7 @@
                 {
                     "id": "A2",
                     "description": "Provides simple CLI monitoring - scrolling output",
-                    "command": "armbianmonitor -m",
+                    "command": "clear && armbianmonitor -m",
                     "show": true,
                     "requirements": ["armbianmonitor"]
                 }
