@@ -61,14 +61,14 @@
                 {
                     "id": "A2",
                     "description": "Provides simple CLI monitoring - scrolling output",
-                    "command": "clear && armbianmonitor -m",
+                    "command": "armbianmonitor -m",
                     "show": false,
                     "requirements": ["armbianmonitor"]
                 },
                 {
                     "id": "A3",
                     "description": "Provides simple CLI monitoring - scrolling output",
-                    "command": "clear && armbianmonitor -m",
+                    "command": "armbianmonitor -m",
                     "show": true,
                     "requirements": ["armbianmonitor"]
                 }

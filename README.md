@@ -1,6 +1,31 @@
 # Expriment
 JSON DIALOGUE BOX
 
+## limitations
+### Supported dialog box:
+- whiptail supported
+- dialog devlopment partly supported.
+- read not emplimented
+
+### requierments
+- basic check
+- does not install TODO
+- missing requierments show warning message
+
+### show hide
+- manualy set TODO handeling
+
+### Interface
+- Ok message box
+- TOP Menu box
+- Sub Menu box
+- Started help message
+
+### Color suported terminals
+- error code `$?` colors
+- catagoryy colors
+  
+
 # Application Name
 
 This application is a command-line interface that interacts with a JSON file to perform various operations.
@@ -12,7 +37,10 @@ The application reads a JSON file which contains a menu of commands. Each comman
 When the application starts, it generates a top-level menu from the JSON file. The user can select a command from the menu by entering the associated ID.
 
 If the user selects a command, the application executes the command. 
-![animation](https://github.com/Tearran/retro-configng/assets/2831630/fa3b24e9-c971-4c86-a4c4-8a82eb78f5d6)
+
+## network shown here has 1 hidden menu item
+See "show": true or false
+![image](https://cdn.discordapp.com/attachments/1196019315074400346/1196021029382922260/animation.gif?ex=65b61c62&is=65a3a762&hm=3e30b65f7e42266b1e848e3cea611517de9448d1a5eed08ed1f0979efa3efb1c&)
 
 ## JSON file format
 
@@ -22,7 +50,7 @@ Here's an example of what the JSON file might look like:
 
 ```json
 {
-"menu": [
+    "menu": [
         {
             "id": "System",
             "description": "System Security Options",
@@ -38,7 +66,7 @@ Here's an example of what the JSON file might look like:
                     "id": "S2",
                     "description": "Test Echo2",
                     "command": "echo 'Hello Armbian'",
-                    "show": true,
+                    "show": false,
                     "requirements": []
                 }
             ]
@@ -52,6 +80,20 @@ Here's an example of what the JSON file might look like:
                     "description": "Wi-fi connect to network",
                     "command": "nmtui connect",
                     "show": true,
+                    "requirements": ["nmtui"]
+                },
+                {
+                    "id": "N2",
+                    "description": "network manager tui",
+                    "command": "nmtui",
+                    "show": true,
+                    "requirements": ["nmtui"]
+                },
+                {
+                    "id": "N3",
+                    "description": "Wi-fi connect to network",
+                    "command": "nmtui connect",
+                    "show": false,
                     "requirements": ["nmtui"]
                 }
             ]
@@ -69,6 +111,13 @@ Here's an example of what the JSON file might look like:
                 },
                 {
                     "id": "A2",
+                    "description": "Provides simple CLI monitoring - scrolling output",
+                    "command": "armbianmonitor -m",
+                    "show": false,
+                    "requirements": ["armbianmonitor"]
+                },
+                {
+                    "id": "A3",
                     "description": "Provides simple CLI monitoring - scrolling output",
                     "command": "armbianmonitor -m",
                     "show": true,
@@ -95,10 +144,16 @@ Here's an example of what the JSON file might look like:
             "sub": [
                 {
                     "id": "H1",
-                    "description": "Change Locale",
+                    "description": "Armbian Config Help",
                     "command": "bash armbian-config --help",
                     "show": true,
-                    "requirements": ["bash", "armbian-config"]
+                    "requirements": ["armbian-config"]
+                },                {
+                    "id": "H2",
+                    "description": "Armbian Configng Help",
+                    "command": "bash armbian-configng --help",
+                    "show": true,
+                    "requirements": ["armbian-configng --help"]
                 }
             ]
         }
