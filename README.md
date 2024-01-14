@@ -12,6 +12,7 @@ The application reads a JSON file which contains a menu of commands. Each comman
 When the application starts, it generates a top-level menu from the JSON file. The user can select a command from the menu by entering the associated ID.
 
 If the user selects a command, the application executes the command. 
+![animation](https://github.com/Tearran/retro-configng/assets/2831630/fa3b24e9-c971-4c86-a4c4-8a82eb78f5d6)
 
 ## JSON file format
 
