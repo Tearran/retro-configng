@@ -10,6 +10,13 @@
                     "command": "echo 'Hello World'",
                     "show": true,
                     "requirements": []
+                },
+                {
+                    "id": "S2",
+                    "description": "Test Echo2",
+                    "command": "echo 'Hello Armbian'",
+                    "show": true,
+                    "requirements": []
                 }
             ]
         },
