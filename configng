@@ -1,0 +1,173 @@
+#!/bin/bash
+bin_dir="$(dirname "$(readlink -f "$BASH_SOURCE")")"
+# Define the path to the JSON file
+json_file="$bin_dir/array.json"
+
+
+display_dialog() {
+    local input=$(cat)
+    local input="$1"
+    whiptail --title "Script Completed" --msgbox "The script has completed successfully. Output:\n\n$input" 20 78
+}
+
+display_yes_no() {
+    local input=$(cat)
+    if whiptail --title "Script Completed" --yesno "The script has completed successfully. Output:\n\n$input\n\nDo you want to continue?" 20 78; then
+        echo "User selected Yes."
+        if whiptail --title "Reboot" --yesno "Output:\n\n$input\n\nDo you want to reboot?" 10 60; then
+            sudo reboot
+        else
+            echo "Reboot cancelled."
+        fi
+    else
+        echo "User selected No."
+        exit
+    fi
+}
+
+execute_command() {
+    local id=$1
+    [[ "$id" == "" ]] && exit 0
+    local command=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .command' $json_file)
+    command=${command:-null}  # If command is null or empty, set it to 'null'
+    if [ "$command" != "null" ]; then
+        # If it does, execute the command
+        echo "About to execute command: $command"
+            /bin/$command
+        return 0
+    else
+        # If command is 'null', print an error message and return a specific exit status
+        {
+            echo "Error: No command associated with ID '$id'"
+            exit 1
+        } | display_dialog
+    fi 
+}
+
+generate_menu() {
+    local parent_id=$1
+
+    # Get the submenu options for the current parent_id
+    local submenu_options=()
+    while IFS= read -r id
+    do
+        IFS= read -r description
+        submenu_options+=("$id" "$description")
+    done < <(jq -r --arg parent_id "$parent_id" '.menu[] | .. | objects | select(.id==$parent_id) | .sub[]? | "\(.id)\n\(.description)"' $json_file)
+    
+    set_newt_colors "$?"
+    
+    local OPTION=$(whiptail --title "Menu" --menu "Choose an option" 0 80 9 "${submenu_options[@]}" \
+                            --ok-button Select --cancel-button Back 3>&1 1>&2 2>&3)
+
+    local exitstatus=$?
+
+    if [ $exitstatus = 0 ]; then
+        # Check if the selected option has a submenu
+        local submenu_count=$(jq -r --arg id "$OPTION" '.menu[] | .. | objects | select(.id==$id) | .sub[]? | length' $json_file)
+        submenu_count=${submenu_count:-0}  # If submenu_count is null or empty, set it to 0
+        if [ $submenu_count -gt 0 ]; then
+            # If it does, generate a new menu for the submenu
+            generate_menu "$OPTION"
+        else
+            # If it doesn't, execute the command
+            execute_command "$OPTION"
+        fi
+    else
+        # If the user pressed the Back button, return to the top-level menu
+        generate_top_menu
+        return 1  # Return a specific exit status
+
+    fi
+
+    }
+
+generate_top_menu() {
+    # Get the top-level menu options
+    color_option="green"
+    local menu_options=()
+    while IFS= read -r id
+    do
+        IFS= read -r description
+        menu_options+=("$id" "$description")
+    done < <(jq -r '.menu[] | "\(.id)\n\(.description)"' $json_file)
+
+    set_newt_colors "$?"
+
+    # Generate the whiptail menu
+    local OPTION=$(whiptail --title "Menu" --menu "Choose an option" 0 80 9 "${menu_options[@]}" 3>&1 1>&2 2>&3)
+    local exitstatus=$?
+
+    if [ $exitstatus = 0 ]; then
+        if [ "$OPTION" == "" ]; then
+            exit 0
+        fi    
+        generate_menu "$OPTION"
+    fi
+}
+
+# Define a function to change the root color
+set_newt_colors() {
+    local color_code=$1
+    case $color_code in
+        0) color="black" ;;
+        1) color="red" ;;
+        2) color="green" ;;
+        3) color="yellow" ;;
+        4) color="blue" ;;
+        5) color="magenta" ;;
+        6) color="cyan" ;;
+        7) color="white" ;;
+        *) echo "Invalid color code"; return 1 ;;
+    esac
+    export NEWT_COLORS="root=,$color"
+}
+
+check_requirements() {
+    local requirements=("$@")
+    for cmd in "${requirements[@]}"; do
+        if ! command -v $cmd &> /dev/null; then
+            echo "Command $cmd not found"
+            return 1
+        fi
+    done
+    echo "All commands are available"
+    return 0
+}
+
+serve_debug() {
+cd $bin_dir && local html_file="index.html"
+requirements=("python3" "nmtui" "apt" "armbianmonitor" "timedatectl" "bash" "armbian-config")
+check_requirements "${requirements[@]}"
+# Use a case switch to handle the different color options
+
+    if [[ -z $CODESPACES ]]; then
+        if command -v python3 &> /dev/null
+        then
+            # Start the Python server in the background
+            python3 -m http.server > /tmp/config.log 2>&1 &
+            local server_pid=$!	
+            echo "Starting server..."
+            sleep 1
+                # Open the HTML file in the browser
+            #[[ -n $browser_cmd ]] && $browser_cmd http://localhost:8000/$html_file
+            read -p "Press enter to continue"
+            # Stop the server
+            kill $server_pid
+            exit 0
+        fi
+    else
+        echo "GitHub Codespace"
+        exit 0
+    fi
+}
+
+[[ "$1" == "--server" ]] && serve_debug ;
+
+generate_top_menu
+
+set_newt_colors 2
+
+
+# Display a dialog box when the script completes
+whiptail --title "Script Completed" --msgbox "The script has completed successfully. Output:\n\n$output" 0 78

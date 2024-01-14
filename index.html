@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Menu Display</title>
+    <style>
+        .menu-item {
+            margin-bottom: 20px;
+        }
+        .sub-item {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="menu-container"></div>
+
+    <script>
+        var menuContainer = document.getElementById('menu-container');
+
+        fetch('./array.json')
+            .then(response => response.json())
+            .then(jsonData => {
+                jsonData.menu.forEach(function(menuItem) {
+                    var menuItemDiv = document.createElement('div');
+                    menuItemDiv.className = 'menu-item';
+                    menuItemDiv.innerHTML = '<h2>' + menuItem.id + ': ' + menuItem.description + '</h2>';
+
+                    menuItem.sub.forEach(function(subItem) {
+                        var subItemDiv = document.createElement('div');
+                        subItemDiv.className = 'sub-item';
+                        subItemDiv.innerHTML = '<h3>' + subItem.id + ': ' + subItem.description + '</h3>' +
+                            '<p>Command: ' + subItem.command + '</p>' +
+                            '<p>Show: ' + subItem.show + '</p>' +
+                            '<p>Requirements: ' + subItem.requirements.join(', ') + '</p>';
+
+                        menuItemDiv.appendChild(subItemDiv);
+                    });
+
+                    menuContainer.appendChild(menuItemDiv);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    </script>
+</body>
+</html>

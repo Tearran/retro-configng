@@ -1,0 +1,76 @@
+{
+    "menu": [
+        {
+            "id": "System",
+            "description": "System Security Options",
+            "sub": [
+                {
+                    "id": "S1",
+                    "description": "Test Echo",
+                    "command": "echo 'Hello World'",
+                    "show": true,
+                    "requirements": []
+                }
+            ]
+        },
+        {
+            "id": "Network",
+            "description": "Network Options",
+            "sub": [
+                {
+                    "id": "N1",
+                    "description": "Wi-fi connect to network",
+                    "command": "nmtui connect",
+                    "show": true,
+                    "requirements": ["nmtui"]
+                }
+            ]
+        },
+        {
+            "id": "Aplications",
+            "description": "Software instalation Options",
+            "sub": [
+                {
+                    "id": "A1",
+                    "description": "Updtate apt repository",
+                    "command": "apt update",
+                    "show": true,
+                    "requirements": ["apt"]
+                },
+                {
+                    "id": "A2",
+                    "description": "Provides simple CLI monitoring - scrolling output",
+                    "command": "armbianmonitor -m",
+                    "show": true,
+                    "requirements": ["armbianmonitor"]
+                }
+            ]
+        },
+        {
+            "id": "Localisation",
+            "description": "Locale Language Region Time Keyboard",
+            "sub": [
+                {
+                    "id": "L1",
+                    "description": "Change Local Timezone",
+                    "command": "sudo timedatectl set-timezone",
+                    "show": true,
+                    "requirements": ["timedatectl"]
+                }
+            ]
+        },
+        {
+            "id": "Help",
+            "description": "About this app",
+            "sub": [
+                {
+                    "id": "H1",
+                    "description": "Change Locale",
+                    "command": "bash armbian-config --help",
+                    "show": true,
+                    "requirements": ["bash", "armbian-config"]
+                }
+            ]
+        }
+    ]
+}
