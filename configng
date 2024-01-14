@@ -1,8 +1,73 @@
 #!/bin/bash
+
 bin_dir="$(dirname "$(readlink -f "$BASH_SOURCE")")"
 # Define the path to the JSON file
 json_file="$bin_dir/array.json"
 
+if command -v whiptail &> /dev/null
+then
+    dialog_cmd="whiptail"
+elif command -v dialog &> /dev/null
+then
+    dialog_cmd="dialog"
+else
+    echo "Error: Neither 'dialog' nor 'whiptail' is installed. Please install one of them and try again."
+    exit 1
+fi
+
+############################
+
+set_colors() {
+    local color_code=$1
+
+    if [ "$dialog_cmd" = "whiptail" ]; then
+        set_newt_colors $color_code
+    elif [ "$dialog_cmd" = "dialog" ]; then
+        set_term_colors $color_code
+    else
+        echo "Invalid dialog type"
+        return 1
+    fi
+}
+
+set_newt_colors() {
+    local color_code=$1
+    case $color_code in
+        0) color="black" ;;
+        1) color="red" ;;
+        2) color="green" ;;
+        3) color="yellow" ;;
+        4) color="blue" ;;
+        5) color="magenta" ;;
+        6) color="cyan" ;;
+        7) color="white" ;;
+        *) echo "Invalid color code"; return 1 ;;
+    esac
+    export NEWT_COLORS="root=,$color"
+}
+
+set_term_colors() {
+    local color_code=$1
+    case $color_code in
+        0) color="\e[40m" ;;  # black
+        1) color="\e[41m" ;;  # red
+        2) color="\e[42m" ;;  # green
+        3) color="\e[43m" ;;  # yellow
+        4) color="\e[44m" ;;  # blue
+        5) color="\e[45m" ;;  # magenta
+        6) color="\e[46m" ;;  # cyan
+        7) color="\e[47m" ;;  # white
+        *) echo "Invalid color code"; return 1 ;;
+    esac
+    echo -e "$color"
+}
+
+reset_colors() {
+    echo -e "\e[0m"
+}
+
+trap reset_colors EXIT
+#############################
 display_dialog() {
     local input
     if [ -p /dev/stdin ]; then
@@ -10,22 +75,7 @@ display_dialog() {
     else
         input="$1"
     fi
-    whiptail --title "Script Completed" --msgbox "$input " 0 78
-}
-
-display_yes_no() {
-    local input=$(cat)
-    if whiptail --title "Script Completed" --yesno "The script has completed successfully. Output:\n\n$input\n\nDo you want to continue?" 20 78; then
-        echo "User selected Yes."
-        if whiptail --title "Reboot" --yesno "Output:\n\n$input\n\nDo you want to reboot?" 10 60; then
-            sudo reboot
-        else
-            echo "Reboot cancelled."
-        fi
-    else
-        echo "User selected No."
-        exit
-    fi
+    $dialog_cmd --title "Script Completed" --msgbox "$input " 0 78
 }
 
 execute_command() {
@@ -60,29 +110,6 @@ execute_command() {
     fi 
 }
 
-execute_command_00() {
-    local id=$1
-    local param=$2  # This is your new parameter
-    [[ "$id" == "" ]] && exit 0
-    local command=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .command' $json_file)
-    command=${command:-null}  # If command is null or empty, set it to 'null'
-    if [ "$command" != "null" ]; then
-        # If it does, execute the command
-        echo "About to execute command: $command"
-        [[ -n "$param" ]] && echo "with parameter: $param"
-
-        $command $param   # Pass the parameter to the command
-        
-        return 0
-    else
-        # If command is 'null', print an error message and return a specific exit status
-        {
-            echo "Error: No command associated with ID '$id'"
-            exit 1
-        } | display_dialog
-    fi 
-}
-
 
 generate_menu() {
     local parent_id=$1
@@ -94,11 +121,10 @@ generate_menu() {
         IFS= read -r description
         submenu_options+=("$id" "$description")
     done < <(jq -r --arg parent_id "$parent_id" '.menu[] | .. | objects | select(.id==$parent_id) | .sub[]? | select(.show==true) | "\(.id)\n\(.description)"' $json_file)
- # done < <(jq -r --arg parent_id "$parent_id" '.menu[] | .. | objects | select(.id==$parent_id) | .sub[]? | "\(.id)\n\(.description)"' $json_file)
     
-    set_newt_colors "$?"
+    set_colors 2 # "$?"
     
-    local OPTION=$(whiptail --title "Menu" --menu "Choose an option" 0 80 9 "${submenu_options[@]}" \
+    local OPTION=$($dialog_cmd --title "Menu" --menu "Choose an option" 0 80 9 "${submenu_options[@]}" \
                             --ok-button Select --cancel-button Back 3>&1 1>&2 2>&3)
 
     local exitstatus=$?
@@ -109,6 +135,7 @@ generate_menu() {
         submenu_count=${submenu_count:-0}  # If submenu_count is null or empty, set it to 0
         if [ $submenu_count -gt 0 ]; then
             # If it does, generate a new menu for the submenu
+            set_colors 2 # "$?"
             generate_menu "$OPTION"
         else
             # If it doesn't, execute the command
@@ -116,6 +143,7 @@ generate_menu() {
         fi
     else
         # If the user pressed the Back button, return to the top-level menu
+        set_colors 3
         generate_top_menu
         return 1  # Return a specific exit status
 
@@ -133,10 +161,10 @@ generate_top_menu() {
         menu_options+=("$id" "$description")
     done < <(jq -r '.menu[] | "\(.id)\n\(.description)"' $json_file)
 
-    set_newt_colors "$?"
+    set_colors 4 # "$?"
 
-    # Generate the whiptail menu
-    local OPTION=$(whiptail --title "Menu" --menu "Choose an option" 0 80 9 "${menu_options[@]}" 3>&1 1>&2 2>&3)
+    # Generate the $dialog_cmd menu
+    local OPTION=$($dialog_cmd --title "Menu" --menu "Choose an option" 0 80 9 "${menu_options[@]}" 3>&1 1>&2 2>&3)
     local exitstatus=$?
 
     if [ $exitstatus = 0 ]; then
@@ -145,23 +173,6 @@ generate_top_menu() {
         fi    
         generate_menu "$OPTION"
     fi
-}
-
-# Define a function to change the root color
-set_newt_colors() {
-    local color_code=$1
-    case $color_code in
-        0) color="black" ;;
-        1) color="red" ;;
-        2) color="green" ;;
-        3) color="yellow" ;;
-        4) color="blue" ;;
-        5) color="magenta" ;;
-        6) color="cyan" ;;
-        7) color="white" ;;
-        *) echo "Invalid color code"; return 1 ;;
-    esac
-    export NEWT_COLORS="root=,$color"
 }
 
 check_requirements() {
@@ -211,16 +222,5 @@ sleep 2
 # test a dialog box with pipe
 
 # test a error background color, red
-set_newt_colors 3
+set_colors 2
 echo -e "The script has completed successfully. \n    Runing though other message tests" | display_dialog 
-
-# test a dialog box with Parmaeter
-# test a normal background color
-output=$(jq -r '.menu[] | "\(.id)\n\(.description)"' $json_file) 
-set_newt_colors 2
-display_dialog $output ;
-
-set_newt_colors 3
-# test a dialog box warning background color, yellow
-# Display a dialog box when the script completes
-whiptail --title "Script Completed" --msgbox "The script has completed successfully. Output:\n\n$output" 0 78
