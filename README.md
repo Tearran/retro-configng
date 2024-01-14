@@ -20,6 +20,7 @@ The JSON file should be an array of objects, where each object represents a menu
 Here's an example of what the JSON file might look like:
 
 ```json
+{
 "menu": [
         {
             "id": "System",
