@@ -8,15 +8,15 @@
                     "id": "S1",
                     "description": "Test Echo",
                     "command": "echo 'Hello World'",
-                    "show": true,
+                    "show": false,
                     "requirements": []
                 },
                 {
                     "id": "S2",
-                    "description": "Test Echo2",
-                    "command": "echo 'Hello Armbian'",
-                    "show": false,
-                    "requirements": []
+                    "description": "Update, upgrade and reboot (legacy)",
+                    "command": "/usr/sbin/armbian-config main=System selection=Firmware",
+                    "show": true,
+                    "requirements": ["armbian-config"]
                 }
             ]
         },
@@ -27,7 +27,7 @@
                 {
                     "id": "N1",
                     "description": "Wi-fi connect to network",
-                    "command": "nmtui connect",
+                    "command": "armbian-configng network=NMTUI",
                     "show": true,
                     "requirements": ["nmtui"]
                 },
@@ -102,7 +102,7 @@
                     "description": "Armbian Configng Help",
                     "command": "bash armbian-configng --help",
                     "show": true,
-                    "requirements": ["armbian-configng --help"]
+                    "requirements": ["armbian-configng"]
                 }
             ]
         }

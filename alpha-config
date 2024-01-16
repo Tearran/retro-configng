@@ -11,13 +11,8 @@ elif command -v dialog &> /dev/null
 then
     dialog_cmd="dialog"
 else
-    cat << EOF
-Error: Neither 'dialog' nor 'whiptail' is installed.
-Please install whiptail for best of them and try again.
-
-EOF
-
-	exit 1
+    echo "Error: Neither 'dialog' nor 'whiptail' is installed. Please install one of them and try again."
+    exit 1
 fi
 
 ############################
@@ -88,31 +83,8 @@ display_dialog() {
     $dialog_cmd --title "Script Completed" --msgbox "$input " 0 78
 }
 
-display_infobox() {
-    export TERM=ansi
-    local input
-    local BACKTITLE="Processing"
-    local -a buffer  # Declare buffer as an array
-    if [ -p /dev/stdin ]; then
-        while IFS= read -r line; do
-            buffer+=("$line")  # Add the line to the buffer
-            # If the buffer has more than 10 lines, remove the oldest line
-            if (( ${#buffer[@]} > 15 )); then
-                buffer=("${buffer[@]:1}")
-            fi
-            # Display the lines in the buffer in the infobox
 
-            TERM=ansi whiptail --title "$BACKTITLE" --infobox "$(printf "%s\n" "${buffer[@]}" | tail -10; echo -e "\n\nCTRL+C to Exit")" 16 78
-            sleep 1
-        done
-    else
-        
-        input="$1"
-        TERM=ansi whiptail --title "$BACKTITLE" --infobox "$( echo "$input" )" 8 78
-    fi
-        echo -ne '\033[3J' # clear the screen
-}
-
+# execute a command associated with an ID
 execute_command() {
     local id=$1
     local param=$2  # This is your new parameter
@@ -122,18 +94,12 @@ execute_command() {
     command=${command:-null}  # If command is null or empty, set it to 'null'
     if [ "$command" != "null" ]; then
         # If it does, execute the command
-        "Executing command associated with ID '$id'..." | display_infobox
-        #echo "About to execute command: $command"
+        echo "About to execute command: $command"
         [[ -n "$param" ]] && echo "with parameter: $param"
 
         # Check requirements before executing the command
         if check_requirements $requirements; then
-            # Start the command in the background
-            (eval "$command $param" | display_infobox) &
-            local command_pid=$!
-
-            # Wait for the command to finish
-            wait $command_pid
+            $command $param   # Pass the parameter to the command
         else
             {
                 echo "Error: Requirements: [$requirements] for command associated with ID '$id' are not met"
@@ -150,7 +116,6 @@ execute_command() {
         } | display_dialog
     fi 
 }
-
 
 # generate a menu for a given parent_id
 generate_menu() {
@@ -172,9 +137,6 @@ generate_menu() {
     local exitstatus=$?
 
     if [ $exitstatus = 0 ]; then
-        if [ "$OPTION" == "" ]; then
-            generate_top_menu
-        fi
         # Check if the selected option has a submenu
         local submenu_count=$(jq -r --arg id "$OPTION" '.menu[] | .. | objects | select(.id==$id) | .sub[]? | length' $json_file)
         submenu_count=${submenu_count:-0}  # If submenu_count is null or empty, set it to 0
@@ -186,8 +148,13 @@ generate_menu() {
             # If it doesn't, execute the command
             execute_command "$OPTION"
         fi
-    fi
+    else
+        # If the user pressed the Back button, return to the top-level menu
+        set_colors 3
+        generate_top_menu
+        return 1  # Return a specific exit status
 
+    fi
 
     }
 
@@ -263,4 +230,10 @@ check_requirements "${requirements[@]}"
 [[ "$1" == "--server" ]] && serve_debug ;
 
 generate_top_menu
+sleep 2
 
+# test a dialog box with pipe
+
+# test a error background color, red
+set_colors 2
+echo -e "The script has completed successfully." | display_dialog 
