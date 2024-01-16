@@ -97,20 +97,49 @@ display_infobox() {
         while IFS= read -r line; do
             buffer+=("$line")  # Add the line to the buffer
             # If the buffer has more than 10 lines, remove the oldest line
-            if (( ${#buffer[@]} > 15 )); then
+            if (( ${#buffer[@]} > 18 )); then
                 buffer=("${buffer[@]:1}")
             fi
             # Display the lines in the buffer in the infobox
 
-            TERM=ansi whiptail --title "$BACKTITLE" --infobox "$(printf "%s\n" "${buffer[@]}" | tail -10; echo -e "\n\nCTRL+C to Exit")" 16 78
+            TERM=ansi $dialog_cmd --title "$BACKTITLE" --infobox "$(printf "%s\n" "${buffer[@]}" )" 16 80
             sleep 1
         done
     else
         
         input="$1"
-        TERM=ansi whiptail --title "$BACKTITLE" --infobox "$( echo "$input" )" 8 78
+        TERM=ansi $dialog_cmd --title "$BACKTITLE" --infobox "$( echo "$input" )" 8 80
     fi
         echo -ne '\033[3J' # clear the screen
+}
+
+display_yesno() {
+    local title="Continue"
+    local message="$1"
+    local height="8"
+    local width="80"
+    if "$dialog_cmd" --title "$title" --yesno "$message" 8 80 ; then
+        echo "User selected Yes, exit status was $?."
+    else
+        echo "User selected No, exit status was $?."
+        exit 0
+    fi
+}
+
+display_inputbox() {
+
+    local prompt="$2"
+    local default_value=""
+    local height="8"
+    local width="39"
+    local input=$(whiptail --inputbox "$prompt" "$height" "$width" "$default_value" --title "$title" 3>&1 1>&2 2>&3)
+    local exitstatus=$?
+    if [ $exitstatus = 0 ]; then
+        echo "User selected Ok and entered " $input
+    else
+        echo "User selected Cancel."
+    fi
+    echo "(Exit status was $exitstatus)"
 }
 
 execute_command() {
@@ -129,7 +158,7 @@ execute_command() {
         # Check requirements before executing the command
         if check_requirements $requirements; then
             # Start the command in the background
-            (eval "$command $param" | display_infobox) &
+            (eval "$command $param" ) &
             local command_pid=$!
 
             # Wait for the command to finish
@@ -188,11 +217,11 @@ generate_menu() {
         fi
     fi
 
-
     }
 
 # generate the top-level menu
 generate_top_menu() {
+    clear
     # Get the top-level menu options
     color_option="green"
     local menu_options=()
@@ -262,5 +291,7 @@ check_requirements "${requirements[@]}"
 
 [[ "$1" == "--server" ]] && serve_debug ;
 
-generate_top_menu
+[[ $(id -u) -ne 0 ]] && display_yesno "You are not root. Do you want to continue?" 
+
+generate_top_menu 
 

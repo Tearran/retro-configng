@@ -27,7 +27,7 @@
                 {
                     "id": "N1",
                     "description": "Wi-fi connect to network",
-                    "command": "armbian-configng network=NMTUI",
+                    "command": "display_yesno ; armbian-configng network=NMTUI",
                     "show": true,
                     "requirements": ["nmtui"]
                 },
@@ -68,7 +68,7 @@
                 {
                     "id": "A3",
                     "description": "Provides simple CLI monitoring - scrolling output",
-                    "command": "armbianmonitor -m",
+                    "command": "armbianmonitor -m | display_infobox",
                     "show": true,
                     "requirements": ["armbianmonitor"]
                 }
@@ -81,7 +81,7 @@
                 {
                     "id": "L1",
                     "description": "Change Local Timezone",
-                    "command": "sudo timedatectl set-timezone",
+                    "command": "timedatectl set-timezone",
                     "show": true,
                     "requirements": ["timedatectl"]
                 }
