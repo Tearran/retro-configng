@@ -151,7 +151,7 @@ execute_command() {
     command=${command:-null}  # If command is null or empty, set it to 'null'
     if [ "$command" != "null" ]; then
         # If it does, execute the command
-        "Executing command associated with ID '$id'..." | display_infobox
+        #"Executing command associated with ID '$id'..." | 
         #echo "About to execute command: $command"
         [[ -n "$param" ]] && echo "with parameter: $param"
 
@@ -190,9 +190,11 @@ generate_menu() {
     while IFS= read -r id
     do
         IFS= read -r description
-        submenu_options+=("$id" "$description")
+        local requirements=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .requirements[]?' $json_file)
+        if check_requirements $requirements; then
+            submenu_options+=("$id" "$description")
+        fi
     done < <(jq -r --arg parent_id "$parent_id" '.menu[] | .. | objects | select(.id==$parent_id) | .sub[]? | select(.show==true) | "\(.id)\n\(.description)"' $json_file)
-    
     set_colors 2 # "$?"
     
     local OPTION=$($dialog_cmd --title "Menu" --menu "Choose an option" 0 80 9 "${submenu_options[@]}" \
@@ -245,17 +247,14 @@ generate_top_menu() {
     fi
 }
 
-
-# check if all the required commands are available
 check_requirements() {
     local requirements=("$@")
     for cmd in "${requirements[@]}"; do
         if ! command -v $cmd &> /dev/null; then
-            echo "Command $cmd not found"
+            #echo "Command $cmd not found"
             return 1
         fi
     done
-    echo "All commands are available"
     return 0
 }
 

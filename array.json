@@ -8,7 +8,7 @@
                     "id": "S1",
                     "description": "Test Echo",
                     "command": "echo 'Hello World'",
-                    "show": false,
+                    "show": true,
                     "requirements": []
                 },
                 {
@@ -26,10 +26,10 @@
             "sub": [
                 {
                     "id": "N1",
-                    "description": "Wi-fi connect to network",
-                    "command": "display_yesno ; armbian-configng network=NMTUI",
+                    "description": "Wi-fi connect to network (carmbian-configng)",
+                    "command": "armbian-configng network=NMTUI",
                     "show": true,
-                    "requirements": ["nmtui"]
+                    "requirements": ["configng", "nmtui"]
                 },
                 {
                     "id": "N2",
@@ -42,7 +42,7 @@
                     "id": "N3",
                     "description": "Wi-fi connect to network",
                     "command": "nmtui connect",
-                    "show": false,
+                    "show": true,
                     "requirements": ["nmtui"]
                 }
             ]
@@ -54,9 +54,9 @@
                 {
                     "id": "A1",
                     "description": "Updtate apt repository",
-                    "command": "apt update",
+                    "command": "apt update | display_infobox",
                     "show": true,
-                    "requirements": ["apt"]
+                    "requirements": []
                 },
                 {
                     "id": "A2",
