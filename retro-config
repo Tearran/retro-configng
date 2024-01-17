@@ -97,13 +97,13 @@ display_infobox() {
         while IFS= read -r line; do
             buffer+=("$line")  # Add the line to the buffer
             # If the buffer has more than 10 lines, remove the oldest line
-            if (( ${#buffer[@]} > 18 )); then
+            if (( ${#buffer[@]} > 10 )); then
                 buffer=("${buffer[@]:1}")
             fi
             # Display the lines in the buffer in the infobox
 
             TERM=ansi $dialog_cmd --title "$BACKTITLE" --infobox "$(printf "%s\n" "${buffer[@]}" )" 16 80
-            sleep 1
+            sleep 0.5
         done
     else
         
@@ -258,26 +258,28 @@ check_requirements() {
     return 0
 }
 
-# server html file
 serve_debug() {
-cd $bin_dir && local html_file="index.html"
-requirements=("python3" "nmtui" "apt" "armbianmonitor" "timedatectl" "bash" "armbian-config")
-check_requirements "${requirements[@]}"
-# Use a case switch to handle the different color options
+    cd $bin_dir && local html_file="index.html"
+    requirements=("python3" "nmtui" "apt" "armbianmonitor" "timedatectl" "bash" "armbian-config")
+    check_requirements "${requirements[@]}"
 
     if [[ -z $CODESPACES ]]; then
         if command -v python3 &> /dev/null
         then
             # Start the Python server in the background
             python3 -m http.server > /tmp/config.log 2>&1 &
-            local server_pid=$!	
-{
-            echo " All commands are available "
-            printf  ' %s' "${requirements[@]}" 
-            echo -e  "\n  pid $server_pid \n  Press enter to exit"
-} | display_dialog 
-        
- 
+            local server_pid=$!
+
+            # Get the IP address of the server
+            local server_ip=$(hostname -I | cut -d' ' -f1)
+
+            {
+                echo " Python3 server started"
+                echo -e  "\n  pid $server_pid"
+                echo -e  "\n  Server URL: http://$server_ip:8000"
+                echo -e  "\n  Press enter to exit"
+            } | display_dialog 
+
             # Stop the server
             kill $server_pid
             exit 0
@@ -288,8 +290,18 @@ check_requirements "${requirements[@]}"
     fi
 }
 
-[[ "$1" == "--server" ]] && serve_debug ;
+display_help() {
+    echo "Usage: $0 [option...]" >&2
+    echo
+    echo "   -h, --help       display this help and exit"
+    echo "       --server     start a local server to debug the script"
+    echo
+    exit 1
+}
 
+# Check if script is run with `-h` or `--help` option
+[[ $1 == "-h" || $1 == "--help" ]] && display_help
+[[ "$1" == "--server" ]] && serve_debug ;
 [[ $(id -u) -ne 0 ]] && display_yesno "You are not root. Do you want to continue?" 
 
 generate_top_menu 

@@ -16,7 +16,7 @@
                     "description": "Update, upgrade and reboot (legacy)",
                     "command": "/usr/sbin/armbian-config main=System selection=Firmware",
                     "show": true,
-                    "requirements": ["armbian-config"]
+                    "requirements": ["apt", "armbian-config"]
                 }
             ]
         },
@@ -26,21 +26,21 @@
             "sub": [
                 {
                     "id": "N1",
-                    "description": "Wi-fi connect to network (carmbian-configng)",
+                    "description": "Wi-fi connect to network (armbian-configng)",
                     "command": "armbian-configng network=NMTUI",
                     "show": true,
-                    "requirements": ["configng", "nmtui"]
+                    "requirements": ["armbian-configng", "nmtui"]
                 },
                 {
                     "id": "N2",
-                    "description": "network manager tui",
+                    "description": "network manager tui (nmtui)",
                     "command": "nmtui",
                     "show": true,
                     "requirements": ["nmtui"]
                 },
                 {
                     "id": "N3",
-                    "description": "Wi-fi connect to network",
+                    "description": "Wi-fi connect to network (nmtui)",
                     "command": "nmtui connect",
                     "show": true,
                     "requirements": ["nmtui"]
@@ -53,10 +53,10 @@
             "sub": [
                 {
                     "id": "A1",
-                    "description": "Updtate apt repository",
+                    "description": "Software apt repository updtate",
                     "command": "apt update | display_infobox",
                     "show": true,
-                    "requirements": []
+                    "requirements": ["apt"]
                 },
                 {
                     "id": "A2",
@@ -71,6 +71,13 @@
                     "command": "armbianmonitor -m | display_infobox",
                     "show": true,
                     "requirements": ["armbianmonitor"]
+                },
+                {
+                    "id": "A4",
+                    "description": "Armbian-interface: help based menu (armbian-configng)",
+                    "command": "armbian-configng monitor=Bencharking",
+                    "show": true,
+                    "requirements": ["armbian-interface", "armbianmonitor"]
                 }
             ]
         },
@@ -80,7 +87,7 @@
             "sub": [
                 {
                     "id": "L1",
-                    "description": "Change Local Timezone",
+                    "description": "Change Local Timezone (testing)",
                     "command": "timedatectl set-timezone",
                     "show": true,
                     "requirements": ["timedatectl"]
@@ -103,6 +110,12 @@
                     "command": "bash armbian-configng --help",
                     "show": true,
                     "requirements": ["armbian-configng"]
+                },                {
+                    "id": "H3",
+                    "description": "Help - menu",
+                    "command": "display_help | display_infobox",
+                    "show": true,
+                    "requirements": [""]
                 }
             ]
         }
