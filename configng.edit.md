@@ -1,7 +1,7 @@
 # Welcome to Config Edit
 
 Config Edit is a project that provides a user interface for editing configurations. It's a HTML file that uses CSS for layout and styling.
-
+![JSON Editor](https://github.com/Tearran/retro-configng/assets/2831630/d1dbd9b4-ea53-49ed-814f-62e05010e16f)
 ## Why Config Edit?
 
 As web technologies continue to evolve, the traditional method of editing configurations through text files is also evolving. Config Edit is our response to this evolution. It provides a visual interface for editing configurations, making it easier and more intuitive.
