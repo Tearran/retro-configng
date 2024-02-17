@@ -9,13 +9,13 @@
                     "description": "Test Echo",
                     "command": "echo 'Hello World'",
                     "show": true,
-                    "requirements": []
+                    "requirements": [""]
                 },
                 {
                     "id": "S2",
                     "description": "Update, upgrade and reboot (legacy)",
                     "command": "/usr/sbin/armbian-config main=System selection=Firmware",
-                    "show": true,
+                    "show": false,
                     "requirements": ["apt", "armbian-config"]
                 }
             ]

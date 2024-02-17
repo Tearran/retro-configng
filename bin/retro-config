@@ -1,8 +1,67 @@
 #!/bin/bash
 
+#
+# Enable Dynamic directory root
+# Simulate /usr/bin/ and /usr/lib/ directories 
+bin="$(dirname "${BASH_SOURCE[0]}")"
+directory="$(cd "$bin/../" && pwd )"
+file_name="$(basename "${BASH_SOURCE[0]}")"
+filename="${file_name%.*}"
+# Set the path to the mod directory
+modpath=$(cd "$directory/lib" && pwd)
+suffix="${file_name##*-}"
+# Armbian information
 bin_dir="$(dirname "$(readlink -f "$BASH_SOURCE")")"
 # Define the path to the JSON file
-json_file="$bin_dir/array.json"
+json_file="$directory/etc/armbian-config/retro-config.json"
+
+function see_ping() {
+    # List of servers to ping
+    servers=("1.1.1.1" "8.8.8.8")
+
+    # Check for internet connection
+    for server in "${servers[@]}"; do
+        if ping -q -c 1 -W 1 $server >/dev/null; then
+            echo "  Checking for Network "
+            echo "     Internet connection is present."
+            echo ""
+            return
+        else
+            echo -e "\e[5;31mWARNING: Internet Not available.\e[0m"
+            echo "  Checking for Network - times."
+            echo "    This app has been disabled? eixt"
+            echo ""
+            exit 1
+        fi
+    done
+}
+
+function is_apt_list_current() {
+    # Number of seconds in a day
+    local day=86400
+
+    # Get the current date as a Unix timestamp
+    local now=$(date +%s)
+
+    # Get the last start time of apt-daily.service as a Unix timestamp
+    local update=$(date -d "$(systemctl show -p ActiveEnterTimestamp apt-daily.service | cut -d'=' -f2)" +%s)
+
+    # Calculate the number of seconds since the last update
+    local elapsed=$(( now - update ))
+
+    # Check if the package list is up-to-date
+    if (( elapsed < day )); then
+        echo "  Checking for apt-daily.service"
+        echo "    The package lists are up-to-date."
+        echo ""
+        return 0  # The package lists are up-to-date
+    else
+        echo "  Checking for apt-daily.service"
+        echo "    The package lists are not up-to-date."
+        echo ""
+        return 1  # The package lists are not up-to-date
+    fi
+}
 
 if command -v whiptail &> /dev/null
 then
@@ -118,7 +177,7 @@ display_yesno() {
     local message="$1"
     local height="8"
     local width="80"
-    if "$dialog_cmd" --title "$title" --yesno "$message" 8 80 ; then
+    if "$dialog_cmd" --title "$title" --yesno "$message " 8 80 ; then
         echo "User selected Yes, exit status was $?."
     else
         echo "User selected No, exit status was $?."
@@ -144,42 +203,68 @@ display_inputbox() {
 
 execute_command() {
     local id=$1
-    local param=$2  # This is your new parameter
+    local param=$2
     [[ "$id" == "" ]] && exit 0
     local command=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .command' $json_file)
-    local requirements=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .requirements[]?' $json_file)
-    command=${command:-null}  # If command is null or empty, set it to 'null'
+    local requirements=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .requirements | .[] | split(" ") | .[]' $json_file)
+    command=${command:-null}
     if [ "$command" != "null" ]; then
-        # If it does, execute the command
-        #"Executing command associated with ID '$id'..." | 
-        #echo "About to execute command: $command"
-        [[ -n "$param" ]] && echo "with parameter: $param"
-
-        # Check requirements before executing the command
-        if check_requirements $requirements; then
-            # Start the command in the background
-            (eval "$command $param" ) &
-            local command_pid=$!
-
-            # Wait for the command to finish
-            wait $command_pid
-        else
-            {
+        echo "Preparing to execute command associated with ID '$id'..."
+        IFS=' ' read -r -a requirements_array <<< "$requirements"
+        if [ ${#requirements_array[@]} -ne 0 ]; then
+            echo "Checking and installing dependencies for command..."
+            see_get_dependencies "${requirements_array[@]}"
+            if [ $? -ne 0 ]; then
                 echo "Error: Requirements: [$requirements] for command associated with ID '$id' are not met"
                 exit 1
-            } | display_dialog
+            fi
         fi
-        
+        echo "Executing command..."
+        (eval "$command $param" ) &
+        local command_pid=$!
+        wait $command_pid
+        echo "Command executed successfully."
         return 0
     else
-        # If command is 'null', print an error message and return a specific exit status
-        {
-            echo "Error: No command associated with ID '$id'"
-            exit 1
-        } | display_dialog
+        echo "Error: No command associated with ID '$id'"
+        exit 1
     fi 
 }
 
+see_get_dependencies() {
+    for dep in "$@"; do
+        echo "Checking for dependency: $dep"
+        if ! command -v $dep &> /dev/null; then
+            echo "$dep could not be found, attempting to install..."
+            sudo apt-get install -y $dep
+            if [ $? -ne 0 ]; then
+                echo "Failed to install $dep. Please install it manually."
+                return 1
+            fi
+        fi
+        echo "$dep is installed."
+    done
+    echo "All dependencies are installed."
+    return 0
+}
+see_remove_dependencies() {
+    for dep in "$@"; do
+        echo "Checking for dependency: $dep"
+        if command -v $dep &> /dev/null; then
+            echo "$dep found, attempting to remove..."
+            sudo apt-get purge -y $dep
+            if [ $? -ne 0 ]; then
+                echo "Failed to remove $dep. Please remove it manually."
+                return 1
+            fi
+        else
+            echo "$dep is not installed."
+        fi
+    done
+    echo "All specified dependencies are removed."
+    return 0
+}
+###################################################################
 
 # generate a menu for a given parent_id
 generate_menu() {
@@ -191,7 +276,7 @@ generate_menu() {
     do
         IFS= read -r description
         local requirements=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .requirements[]?' $json_file)
-        if check_requirements $requirements; then
+        if see_get_dependencies $requirements; then
             submenu_options+=("$id" "$description")
         fi
     done < <(jq -r --arg parent_id "$parent_id" '.menu[] | .. | objects | select(.id==$parent_id) | .sub[]? | select(.show==true) | "\(.id)\n\(.description)"' $json_file)
@@ -223,7 +308,7 @@ generate_menu() {
 
 # generate the top-level menu
 generate_top_menu() {
-    clear
+    #clear
     # Get the top-level menu options
     color_option="green"
     local menu_options=()
@@ -247,38 +332,29 @@ generate_top_menu() {
     fi
 }
 
-check_requirements() {
-    local requirements=("$@")
-    for cmd in "${requirements[@]}"; do
-        if ! command -v $cmd &> /dev/null; then
-            #echo "Command $cmd not found"
-            return 1
-        fi
-    done
-    return 0
-}
-
+# Serve array editor
 serve_debug() {
+    if [[ "$(id -u)" == "0" ]] ; then
+		echo "Yello World!"
+		exit 1
+	fi
     cd $bin_dir && local html_file="index.html"
-    requirements=("python3" "nmtui" "apt" "armbianmonitor" "timedatectl" "bash" "armbian-config")
-    check_requirements "${requirements[@]}"
-
     if [[ -z $CODESPACES ]]; then
         if command -v python3 &> /dev/null
         then
             # Start the Python server in the background
-            python3 -m http.server > /tmp/config.log 2>&1 &
+            python3 -m http.server > /tmp/$USER.config.log 2>&1 &
             local server_pid=$!
 
             # Get the IP address of the server
             local server_ip=$(hostname -I | cut -d' ' -f1)
 
             {
-                echo " Python3 server started"
+                echo " Simple server started"
                 echo -e  "\n  pid $server_pid"
                 echo -e  "\n  Server URL: http://$server_ip:8000"
-                echo -e  "\n  Press enter to exit"
-            } | display_dialog 
+                echo -e  "\n  Press enter to stop server and exit"
+            } 
 
             # Stop the server
             kill $server_pid
@@ -289,20 +365,93 @@ serve_debug() {
         exit 0
     fi
 }
-
-display_help() {
-    echo "Usage: $0 [option...]" >&2
-    echo
-    echo "   -h, --help       display this help and exit"
-    echo "       --server     start a local server to debug the script"
-    echo
-    exit 1
+sudoer_error() {
+ set_newt_colors 1
+ echo "This tool requires root privileges. Please try: sudo ${0##*/} " | display_infobox
+ exit 1
 }
 
-# Check if script is run with `-h` or `--help` option
-[[ $1 == "-h" || $1 == "--help" ]] && display_help
-[[ "$1" == "--server" ]] && serve_debug ;
-[[ $(id -u) -ne 0 ]] && display_yesno "You are not root. Do you want to continue?" 
+user_error() {
+ set_newt_colors 3
+ echo "Develoment tool 'user privileges' only. Please try: ${0##*/} " | display_infobox
+ exit 1
+}
 
-generate_top_menu 
+display_help() {
+        cat << EOF
+
+Usage: [standard output] | ${0##*/} [option]
+
+  -h, --help       Show this help message
+  -q, --yesno      Yes No Question
+  -s, --server     start a local server debug and edit
+  -o, --message    Show a OK message box
+  -p, --popup      Use a progress popup
+      --deps       Install missing dependencies
+      --purge      Remove installed
+      --ping       Check connection with fallback DNS
+
+        If no option is provided, the menu will be shown.
+
+    Environment Variables:
+         dialog boxes, \$DIALOG currently set to: $DIALOG
+
+    Example try:
+        echo "hello" | ${0##*/} -o
+        ${0##*/} --deps git nano
+        ${0##*/} --ping
+
+EOF
+}
+
+case "$1" in
+    "-h" | "--help")
+		display_help
+		exit 0
+	;;
+    "-s" | "--server")
+        # Exit fail if user is root 
+    	if [[ "$(id -u)" == "0" ]] ; then
+			user_error
+			exit 1
+		else
+    		set_newt_colors 3
+			serve_debug | display_dialog
+        	exit 0
+		fi
+		;;
+    "-o" | "--message")
+		display_dialog
+		;;
+    "-p" | "--popup")
+		display_infobox
+		;;
+	"-P" | "--ping")
+        see_ping
+		exit 0
+		;;
+	"-D" | "--deps")
+        # Exit fail if user is not root
+        [[ $(id -u) -ne 0 ]] && sudoer_error
+        see_ping
+        is_apt_list_current
+        shift
+        see_get_dependencies "${@}"
+		exit 0
+	;;
+	"-R" | "--purge")
+        see_ping
+        [[ $(id -u) -ne 0 ]] && sudoer_error
+        is_apt_list_current | display_infobox
+        shift
+        see_remove_dependencies "${@}" | display_infobox
+		;;
+	"-U" | "--Update")
+        [[ $(id -u) -ne 0 ]] && sudoer_error
+        is_apt_list_current ;;
+#     *) echo "Invalid option: $1" ; display_help ;;
+esac
+
+    [[ $(id -u) -ne 0 ]] && sudoer_error
+    [[ "$(id -u)" == "0" ]] && generate_top_menu
 
