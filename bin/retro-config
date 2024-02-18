@@ -67,15 +67,8 @@ function see_help() {
         fi
     done
 
-    #help_message+="\nCo Authors:\n  ${options["co_authors"]}\n"
-
     echo -e "$help_message"
 }
-
-# if sudo and no option is passed, show the menu
-#[[ "$(id -u)" == "0" ]] && generate_top_menu
-
-[[ "$1" == "help" ]] && parse_json ; 
 
 while (( "$#" )); do
     case "$1" in
@@ -92,6 +85,12 @@ while (( "$#" )); do
             remove_dependencies "${rm_deps[@]}"
             shift
             ;;
+        set-colors=*)
+            code="${1#set-colors=}"
+            IFS=' ' read -r -a set_colors <<< "$code"
+            set_colors "${set_colors[@]}" 
+            shift
+            ;;
         ping)
             see_ping
             shift
@@ -100,12 +99,17 @@ while (( "$#" )); do
             see_help
             shift
             ;;
+        help)
+            parse_json
+            shift
+            ;;
         *)
             echo "Error: Unsupported flag $1" >&2
             exit 1
             ;;
     esac
 done
-
+# if sudo and no option is passed, show the menu
+[[ "$(id -u)" == "0" ]] && generate_top_menu
 exit 0
 

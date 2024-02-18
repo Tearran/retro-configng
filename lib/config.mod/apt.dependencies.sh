@@ -4,11 +4,11 @@
 # Declare the module options
 declare -A module_options=( 
     ["co_authors"]="Joey Turner"
-    ["get_dependencies,long"]="--get_deps"
+    ["get_dependencies,long"]="get_deps=\"\""
     ["get_dependencies,disc"]="Install missing dependencies"
     ["get_dependencies,use"]="  get_dependencies \"arg1 arg2 arg3...\""
 
-    ["remove_dependencies,long"]="--rm-deps"
+    ["remove_dependencies,long"]="rm-deps"
     ["remove_dependencies,disc"]="Remove installed dependencies"
     ["remove_dependencies,use"]="  remove_dependencies \"arg1 arg2 arg3...\"" 
 

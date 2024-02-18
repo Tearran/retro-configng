@@ -1,36 +1,22 @@
 {
     "menu": [
         {
-            "id": "System",
+            "id": "Testing",
             "description": "System and Security Options",
             "sub": [
                 {
-                    "id": "S1",
+                    "id": "S0",
                     "description": "Check Freeze State (testing)",
-                    "command": "see_ping && see_current_apt; see_firmware_hold | show_yesno",
+                    "command": "see_ping && see_current_apt | show_infobox && clear; see_firmware_hold | show_yesno ; ",
                     "show": true,
                     "requirements": [""]
-                }
-            ]
-        },
-        {
-            "id": "Network",
-            "description": "Network Options",
-            "sub": [
-                 {
-                    "id": "N0",
-                    "description": "network manager tui (nmtui)",
-                    "command": "nmtui connect",
+                },{
+                    "id": "S1",
+                    "description": "Check Colors (testing)",
+                    "command": "set_colors 0 && echo 'Color code 0' && set_colors 1 && echo 'Color code 1' | show_infobox ; set_colors 2 && echo 'Color code 2' | show_infobox ; set_colors 3 && echo 'Color code 3' | show_infobox ; set_colors 4 && echo 'Color code 4 ' | show_infobox ; set_colors 5 && echo 'Color code 5' | show_infobox ;  set_colors 6 && echo 'Color code 6' | show_infobox && clear ;  set_colors 7 && echo 'Color code 7' | show_infobox && clear ;  set_colors 0 && echo 'Colors 0-7 test' | show_message ;",
                     "show": true,
-                    "requirements": ["nmtui"]
-                }
-            ]
-        },
-        {
-            "id": "Aplications",
-            "description": "Software instalation Options",
-            "sub": [
-                {
+                    "requirements": [""]
+                },{
                     "id": "A0",
                     "description": "Software apt repository updtate",
                     "command": "see_current_apt | show_infobox ; ",
@@ -46,32 +32,19 @@
             ]
         },
         {
-            "id": "Localisation",
-            "description": "Locale Language Region Time Keyboard",
-            "sub": [
-                {
-                    "id": "L1",
-                    "description": "Change Local Timezone (testing)",
-                    "command": "timedatectl set-timezone",
-                    "show": true,
-                    "requirements": [""]
-                }
-            ]
-        },
-        {
             "id": "Help",
             "description": "About this app",
             "sub": [
                 {
                     "id": "H1",
                     "description": "Armbian Config Help",
-                    "command": "bash armbian-config --help",
+                    "command": "bash armbian-config --help |  show_message",
                     "show": true,
                     "requirements": [""]
                 },{
                     "id": "H3",
                     "description": "Help - menu",
-                    "command": "see_help | show_message",
+                    "command": "parse_json | show_message",
                     "show": true,
                     "requirements": [""]
                 }

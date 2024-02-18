@@ -21,6 +21,7 @@ set_colors() {
 
     if [ "$dialog_cmd" = "whiptail" ]; then
         set_newt_colors "$color_code"
+         #echo "color code: $color_code" | show_infobox ;
     elif [ "$dialog_cmd" = "dialog" ]; then
         set_term_colors "$color_code"
     else
@@ -40,7 +41,9 @@ set_newt_colors() {
         5) color="magenta" ;;
         6) color="cyan" ;;
         7) color="white" ;;
-        *) echo "Invalid color code"; return 1 ;;
+        8) color="black" ;;
+        9) color="red" ;;
+        *) break ;;
     esac
     export NEWT_COLORS="root=,$color"
 }
