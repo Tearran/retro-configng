@@ -3,16 +3,18 @@
 
 # Declare the module options
 declare -A module_options=( 
-    ["author"]="Joey Turner"
+    ["co_authors"]="Joey Turner"
     ["get_dependencies,long"]="--get_deps"
     ["get_dependencies,disc"]="Install missing dependencies"
-    ["get_dependencies,use"]="get_dependencies arg1 arg2 arg3..."
-    ["remove_dependencies,long"]="--rm_deps"
+    ["get_dependencies,use"]="  get_dependencies \"arg1 arg2 arg3...\""
+
+    ["remove_dependencies,long"]="--rm-deps"
     ["remove_dependencies,disc"]="Remove installed dependencies"
-    ["remove_dependencies,use"]="remove_dependencies arg1 arg2 arg3..."   
-    ["get_current_apt,long"]="--see_apt"
+    ["remove_dependencies,use"]="  remove_dependencies \"arg1 arg2 arg3...\"" 
+
+    ["get_current_apt,long"]="--see-apt"
     ["get_current_apt,disc"]="Check if apt, apt-get, or dpkg is currently running, and package list is up-to-date"
-    ["get_current_apt,use"]="see_current_apt"
+    ["get_current_apt,use"]="  see_current_apt"
 )
 
 # Merge the module options into the global options
@@ -20,20 +22,20 @@ for key in "${!module_options[@]}"; do
     options["$key"]="${module_options[$key]}"
 done
 
-function see_current_apt() {
+see_current_apt() {
     # Number of seconds in a day
     local day=86400
 
     # Get the current date as a Unix timestamp
     local now=$(date +%s)
 
-    # Get the last start time of apt-daily.service as a Unix timestamp
-    local update=$(date -d "$(systemctl show -p ActiveEnterTimestamp apt-daily.service | cut -d'=' -f2)" +%s)
+    # Get the timestamp of the most recently updated file in /var/lib/apt/lists/
+    local update=$(stat -c %Y /var/lib/apt/lists/* | sort -n | tail -1)
 
     # Calculate the number of seconds since the last update
     local elapsed=$(( now - update ))
 
-    if ps -C apt-get,apt,dpkg >/dev/null; then
+if ps -C apt-get,apt,dpkg >/dev/null; then
         echo "apt-get, apt, or dpkg is currently running."
         return 1  # The processes are running
     else
@@ -42,7 +44,7 @@ function see_current_apt() {
     # Check if the package list is up-to-date
     if (( elapsed < day )); then
         echo "Checking for apt-daily.service"
-        echo "The package lists were last updated $(date -d@$update -u +%H:%M:%S) ago."
+        echo "The package lists were last updated $(date -u -d @${elapsed} +"%T") ago."
         return 0  # The package lists are up-to-date
     else
         echo "Checking for apt-daily.service"
@@ -85,4 +87,9 @@ function remove_dependencies() {
     done
     echo "All specified dependencies are removed."
     return 0
+}
+
+update_packages() {
+    echo "Updating package lists..."
+    apt-get update
 }

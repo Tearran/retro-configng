@@ -3,9 +3,10 @@
 
 # Declare the module options
 declare -A module_options=( 
-    ["author"]="Joey Turner"
+    ["co_authors"]="Joey Turner"
     ["see_ping,long"]="--ping"
     ["see_ping,disc"]="Check connection with fallback DNS"
+    ["see_ping,use"]="  see_ping"
 )
 
 # Merge the module options into the global options
@@ -19,7 +20,7 @@ function see_ping() {
 
     # Check for internet connection
     for server in "${servers[@]}"; do
-        if ping -q -c 1 -W 1 $server >/dev/null; then
+        if ping -q -c 1 -W 1 "$server" >/dev/null; then
             echo "Internet connection is present."
             return
         else

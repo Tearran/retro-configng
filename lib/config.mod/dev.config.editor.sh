@@ -1,19 +1,26 @@
 #!/bin/bash
 
-# Authors
-author+=("(c) 2022 Joey Turner. All rights reserved.")
-long_option+=("--serve-debug")
-# Help message
-readarray -t -O "${#help_message[@]}" help_message <<EOF
-lib/config.mod/dev.config.editor.sh
+# Declare the module options
+declare -A module_options=( 
+    ["author"]="Joey Turner"
 
-  # Simple server
-    debug and edit arrays will exit if the user is root
-      serve_debug 
+    ["set_newt_colors"]="--set-newt-colors"
+    ["set_newt_colors,disc"]="Set the color of the newt interface"
+    ["set_newt_colors,use"]="  set_newt_colors \"arg1\""
 
-EOF
+    ["serve_debug"]="--serve-debug"
+    ["serve_debug,disc"]="Serve the debug server"
+    ["serve_debug,use"]="  serve_debug"
+
+)
+
+# Merge the module options into the global options
+for key in "${!module_options[@]}"; do
+    options["$key"]="${module_options[$key]}"
+done
+
 set_newt_colors() {
-    local color_code=$1
+    local color_code="$1"
     case $color_code in
         0) color="green" ;; # passing
         1) color="red" ;;   # failing
@@ -23,7 +30,7 @@ set_newt_colors() {
         5) color="magenta" ;; # error
         6) color="cyan" ;; # success
         7) color="white" ;; # default
-        *) echo "Invalid color code"; return 1 ;;
+        *) echo "$1 is a Invalid color code"; return 1 ;;
     esac
     export NEWT_COLORS="root=,$color"
 }

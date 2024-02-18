@@ -1,78 +1,12 @@
 #!/bin/bash
 
-# This script provides a command-line interface for managing Armbian configuration.
-
-#set -x
-
-#
-#
-# Enable Dynamic directory root
-# Simulate /usr/bin/ and /usr/lib/ directories 
-bin="$(dirname "${BASH_SOURCE[0]}")"
-directory="$(cd "$bin/../" && pwd )"
-file_name="$(basename "${BASH_SOURCE[0]}")"
-filename="${file_name%.*}"
-# Set the path to the mod directory
-modpath=$(cd "$directory/lib" && pwd)
-suffix="${file_name##*-}"
-# Armbian information
-[[ -f "/etc/armbian-release" ]] && source /etc/armbian-release
-[[ -f "/etc/os-release" ]] && source /etc/os-release
-# source the module files
-{
-# Define the options for the module    
-declare -A options
-# source the module files
-for file in "$modpath/config.mod"/*.sh
-do
-  if [[ -f "$file" ]]; then
-    source "$file" "$file"
-  fi
-done
-}
-
-function see_help() {
-    help_message="Usage: ${0##*/} [options] [arguments] \n\nOptions:\n"
-
-    # Iterate over the options
-    for key in "${!options[@]}"; do
-        # Split the key into function_name and type
-        IFS=',' read -r function_name type <<< "$key"
-
-        # If the type is 'long', append the option to the help message
-        if [[ "$type" == "long" ]]; then
-            help_message+="  ${options[$key]}  ${options["$function_name,disc"]}\n"
-            help_message+="  ${options["$function_name,use"]}\n"
-        fi
-    done
-
-    help_message+="\nAuthors:\n  ${options["author"]}\n"
-
-    echo -e "$help_message"
-}
-
-
 while (( "$#" )); do
     case "$1" in
-        --get-deps|-g)
-        set_newt_colors 0
-            shift
-            IFS=' ' read -r -a get_deps <<< "$1"
-            # infile get_dependencies "git nano etc..."
-            get_dependencies "${get_deps[@]}"
-            shift
-            ;;
         get-deps=*)
             deps="${1#get-deps=}"
             IFS=' ' read -r -a get_deps <<< "$deps"
             # infile rm_dependencies "git nano etc..."
             get_dependencies "${get_deps[@]}"
-            shift
-            ;;
-        --rm-deps|-r)
-            shift
-            IFS=' ' read -r -a rm_deps <<< "$1"
-            remove_dependencies "${rm_deps[@]}"
             shift
             ;;
         rm-deps=*)
@@ -81,58 +15,21 @@ while (( "$#" )); do
             remove_dependencies "${rm_deps[@]}"
             shift
             ;;
-        --ping|-p)
-            see_ping 
+        ping=true)
+            see_ping
             shift
             ;;
         --help|-h)
             see_help
             shift
             ;;
-        --dev|-d)
-            shift
-            serve_debug
-            ;;
-        --see-firmware|-f)
-            see_firmware_hold
-            shift
-            ;;
-        --freeze-firmware)
-            hold_packages
-            shift
-            ;;
-        --unfreeze-firmware)
-            unhold_packages
-            shift
-            ;;
-        --message|-o)
-            show_message 
-            shift
-            ;;           
-        --continue|-c)
-            show_yesno
-            shift
-            ;;
-        --menu|-m)
-            show_menu 
-            exit 0
-            ;;
-        --infobox|-i)
-            show_infobox
-            shift
-            ;;
-            -t)
-            echo "show_message" | show_message
-            shift
-            ;;
-        -*|--*=)
+
+        *)
             echo "Error: Unsupported flag $1" >&2
             exit 1
             ;;
     esac
 done
-
-#display_help
 
 exit 0
 

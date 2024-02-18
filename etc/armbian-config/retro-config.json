@@ -2,21 +2,14 @@
     "menu": [
         {
             "id": "System",
-            "description": "System Security Options",
+            "description": "System and Security Options",
             "sub": [
                 {
                     "id": "S1",
-                    "description": "Test Echo",
-                    "command": "echo 'Hello World'",
+                    "description": "Check Freeze State (testing)",
+                    "command": "see_ping && see_current_apt; see_firmware_hold | show_yesno",
                     "show": true,
                     "requirements": [""]
-                },
-                {
-                    "id": "S2",
-                    "description": "Update, upgrade and reboot (legacy)",
-                    "command": "/usr/sbin/armbian-config main=System selection=Firmware",
-                    "show": false,
-                    "requirements": ["apt", "armbian-config"]
                 }
             ]
         },
@@ -24,23 +17,9 @@
             "id": "Network",
             "description": "Network Options",
             "sub": [
-                {
-                    "id": "N1",
-                    "description": "Wi-fi connect to network (armbian-configng)",
-                    "command": "armbian-configng network=NMTUI",
-                    "show": true,
-                    "requirements": ["armbian-configng", "nmtui"]
-                },
-                {
-                    "id": "N2",
+                 {
+                    "id": "N0",
                     "description": "network manager tui (nmtui)",
-                    "command": "nmtui",
-                    "show": true,
-                    "requirements": ["nmtui"]
-                },
-                {
-                    "id": "N3",
-                    "description": "Wi-fi connect to network (nmtui)",
                     "command": "nmtui connect",
                     "show": true,
                     "requirements": ["nmtui"]
@@ -52,32 +31,17 @@
             "description": "Software instalation Options",
             "sub": [
                 {
-                    "id": "A1",
+                    "id": "A0",
                     "description": "Software apt repository updtate",
-                    "command": "apt update | display_infobox",
+                    "command": "see_current_apt | show_infobox ; ",
                     "show": true,
-                    "requirements": ["apt"]
-                },
-                {
-                    "id": "A2",
+                    "requirements": [""]
+                },{
+                    "id": "A1",
                     "description": "Provides simple CLI monitoring - scrolling output",
-                    "command": "armbianmonitor -m",
-                    "show": false,
-                    "requirements": ["armbianmonitor"]
-                },
-                {
-                    "id": "A3",
-                    "description": "Provides simple CLI monitoring - scrolling output",
-                    "command": "armbianmonitor -m | display_infobox",
+                    "command": "armbianmonitor -m | show_infobox",
                     "show": true,
-                    "requirements": ["armbianmonitor"]
-                },
-                {
-                    "id": "A4",
-                    "description": "Armbian-interface: help based menu (armbian-configng)",
-                    "command": "armbian-configng monitor=Bencharking",
-                    "show": true,
-                    "requirements": ["armbian-interface", "armbianmonitor"]
+                    "requirements": [""]
                 }
             ]
         },
@@ -90,7 +54,7 @@
                     "description": "Change Local Timezone (testing)",
                     "command": "timedatectl set-timezone",
                     "show": true,
-                    "requirements": ["timedatectl"]
+                    "requirements": [""]
                 }
             ]
         },
@@ -103,17 +67,11 @@
                     "description": "Armbian Config Help",
                     "command": "bash armbian-config --help",
                     "show": true,
-                    "requirements": ["armbian-config"]
-                },                {
-                    "id": "H2",
-                    "description": "Armbian Configng Help",
-                    "command": "bash armbian-configng --help",
-                    "show": true,
-                    "requirements": ["armbian-configng"]
-                },                {
+                    "requirements": [""]
+                },{
                     "id": "H3",
                     "description": "Help - menu",
-                    "command": "display_help | display_infobox",
+                    "command": "see_help | show_message",
                     "show": true,
                     "requirements": [""]
                 }

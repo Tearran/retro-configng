@@ -8,20 +8,42 @@
 # Define the options for this module
 declare -A module_options=( 
     ["author"]="Joey Turner"
+    
     ["show_menu,long"]="--see-menu"
     ["show_menu,disc"]="Show a TUI menu and get the user's choice"
+    ["show_menu,use"]="  show_menu"
+    
     ["show_message,long"]="--message"
-    ["show_message,disc"]="Display a OK message box"
+    ["show_message,disc"]="Display a message box"
+    ["show_message,use"]="  show_message"
+    
+    
     ["show_infobox,long"]="--infobox"
     ["show_infobox,disc"]="Display a infobox with a message"
+    ["show_infobox,use"]="  show_infobox"
+    
+    
     ["show_yesno,long"]="--coninue"
     ["show_yesno,disc"]="Display a Yes/No message box"
+    ["show_yesno,use"]="  show_yesno"
+
 )
 
 # Merge the module options into the global options
 for key in "${!module_options[@]}"; do
     options["$key"]="${module_options[$key]}"
 done
+
+function get_input() {
+    input=$($DIALOG --inputbox "Please enter your input: " 10 60 3>&1 1>&2 2>&3)
+    exitstatus=$?
+    if [ $exitstatus = 0 ]; then
+        $1 "$input"
+    else
+        echo "You cancelled."
+    fi
+}
+
 
 show_menu(){
     # Get the input and convert it into an array of options
@@ -120,3 +142,5 @@ show_yesno() {
         exit 1
     fi
 }
+
+
