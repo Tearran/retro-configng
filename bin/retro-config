@@ -71,50 +71,16 @@ function see_help() {
 
     echo -e "$help_message"
 }
-
-while (( "$#" )); do
-    case "$1" in
-        get-deps=*)
-            deps="${1#get-deps=}"
-            IFS=' ' read -r -a get_deps <<< "$deps"
-            # infile rm_dependencies "git nano etc..."
-            get_dependencies "${get_deps[@]}"
-            shift
-            ;;
-        rm-deps=*)
-            deps="${1#rm-deps=}"
-            IFS=' ' read -r -a rm_deps <<< "$deps"
-            remove_dependencies "${rm_deps[@]}"
-            shift
-            ;;
-        set-colors=*)
-            code="${1#set-colors=}"
-            IFS=' ' read -r -a set_colors <<< "$code"
-            set_colors "${set_colors[@]}" 
-            shift
-            ;;
-        ping)
-            see_ping
-            shift
-            ;;
-        --help|-h)
-            see_help
-            shift
-            ;;
-        help)
-            parse_json
-            shift
-            ;;
-        *)
-            echo "Error: Unsupported flag $1" >&2
-            exit 1
-            ;;
-    esac
+if [[ "$(id -u)" == "0" ]]; then
+    # Case statement for root user
+while true; do
+    generate_top_menu 
 done
-# if sudo and no option is passed, show the menu
+else
+ echo "You must be root to run this script"
+    exit 1
+fi
 
-
-
-[[ "$(id -u)" == "0" ]] && generate_top_menu
+#[[ "$(id -u)" == "0" ]] && generate_top_menu
 exit 0
 
