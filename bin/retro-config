@@ -14,7 +14,9 @@ export filename="${file_name%.*}"
 modpath=$(cd "$directory/lib" && pwd)
 export suffix="${file_name##*-}"
 json_file="$directory/etc/armbian-config/retro-config.json" || exit 1
-export json_file
+json_data=$(cat "$json_file")
+
+
 # Armbian information
 [[ -f "/etc/armbian-release" ]] && source /etc/armbian-release
 [[ -f "/etc/os-release" ]] && source /etc/os-release
@@ -27,7 +29,7 @@ declare -A options
 for file in "$modpath/config.mod"/*.sh
     do
         if [[ -f "$file" ]]; then
-            source "$file" "$file"
+            source "$file" 
             #cat "$file" >> "$directory/$monolith_name"
         fi
     done
@@ -110,6 +112,9 @@ while (( "$#" )); do
     esac
 done
 # if sudo and no option is passed, show the menu
+
+
+
 [[ "$(id -u)" == "0" ]] && generate_top_menu
 exit 0
 

@@ -72,23 +72,30 @@ reset_colors() {
 trap reset_colors EXIT
 #############################
 
-# generate the top-level menu
+
+
 generate_top_menu() {
-    
-    #json=$(cat $directory/etc/armbian-config/retro-config.json)
-    #clear
-    # Get the top-level menu options
     color_option="green"
     local menu_options=()
     while IFS= read -r id
     do
         IFS= read -r description
-        menu_options+=("$id" "$description")
-    done < <(jq -r '.menu[] | "\(.id)\n\(.description)"' "$json_file")
+        IFS= read -r condition
+        # If the condition field is not empty and not null, run the function specified in the condition
+        if [[ -n $condition && $condition != "null" ]]; then
+            local condition_result=$(eval $condition)
+            # If the function returns a truthy value, add the menu item to the menu
+            if [[ $condition_result ]]; then
+                menu_options+=("$id" "$description")
+            fi
+        else
+            # If the condition field is empty or null, add the menu item to the menu
+            menu_options+=("$id" "$description")
+        fi
+    done < <(jq -r '.menu[] | select(.show==true) | "\(.id)\n\(.description)\n\(.condition)"' "$json_file")
 
-    set_colors 4 # "$?"
+    set_colors 4
 
-    # Generate the $dialog_cmd menu
     local OPTION=$($dialog_cmd --title "Menu" --menu "Choose an option" 0 80 9 "${menu_options[@]}" 3>&1 1>&2 2>&3)
     local exitstatus=$?
 
@@ -137,11 +144,8 @@ generate_menu() {
 
 execute_command() {
     local id=$1
-    local requirements=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .requirements[]?' "$json_file")
-    if get_dependencies "$requirements"; then
-        local command=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .command' "$json_file")
+    local commands=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .command[]' "$json_file")
+    for command in "${commands[@]}"; do
         eval "$command"
-    else
-        echo "Failed to meet requirements for command $id"
-    fi
+    done
 }

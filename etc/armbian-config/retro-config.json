@@ -1,31 +1,44 @@
 {
     "menu": [
         {
-            "id": "Testing",
-            "description": "System and Security Options",
+            "id": "Tests",
+            "description": " Play ground",
+            "show": true,
             "sub": [
                 {
                     "id": "S0",
                     "description": "Check Freeze State (testing)",
-                    "command": "see_ping && see_current_apt | show_infobox && clear; see_firmware_hold | show_yesno ; ",
+                    "command": [
+                        "see_ping | show_infobox",
+                        "see_current_apt | show_infobox",
+                        "clear",
+                        "see_firmware_hold | show_yesno"
+                    ],
                     "show": true,
                     "requirements": [""]
                 },{
                     "id": "S1",
                     "description": "Check Colors (testing)",
-                    "command": "set_colors 0 && echo 'Color code 0' && set_colors 1 && echo 'Color code 1' | show_infobox ; set_colors 2 && echo 'Color code 2' | show_infobox ; set_colors 3 && echo 'Color code 3' | show_infobox ; set_colors 4 && echo 'Color code 4 ' | show_infobox ; set_colors 5 && echo 'Color code 5' | show_infobox ;  set_colors 6 && echo 'Color code 6' | show_infobox && clear ;  set_colors 7 && echo 'Color code 7' | show_infobox && clear ;  set_colors 0 && echo 'Colors 0-7 test' | show_message ;",
+                    "command": [
+                        "for i in {0..7}; do set_colors $i && echo Color code $i | show_infobox; done; clear ",
+                        "set_colors 0 && echo 'Colors 0-7 test' | show_message ;"
+                    ],
                     "show": true,
                     "requirements": [""]
                 },{
                     "id": "A0",
                     "description": "Software apt repository updtate",
-                    "command": "see_current_apt | show_infobox ; ",
+                    "command": [
+                        "see_current_apt | show_infobox ; "
+                    ],
                     "show": true,
                     "requirements": [""]
                 },{
                     "id": "A1",
                     "description": "Provides simple CLI monitoring - scrolling output",
-                    "command": "armbianmonitor -m | show_infobox",
+                    "command":[ 
+                        "armbianmonitor -m | show_infobox"
+                    ],
                     "show": true,
                     "requirements": [""]
                 }
@@ -34,18 +47,23 @@
         {
             "id": "Help",
             "description": "About this app",
+            "show": true,
             "sub": [
                 {
-                    "id": "H1",
-                    "description": "Armbian Config Help",
-                    "command": "bash armbian-config --help |  show_message",
+                    "id": "H0",
+                    "description": "Help (WIP)",
+                    "command": [
+                        "see_help | show_message"
+                    ],
                     "show": true,
                     "requirements": [""]
-                },{
+                }, {
                     "id": "H3",
-                    "description": "Help - menu",
-                    "command": "parse_json | show_message",
-                    "show": true,
+                    "description": "Armbian Config Help (WIP)",
+                    "command":[
+                         "bash armbian-config --help |  show_message"
+                    ],
+                         "show": true,
                     "requirements": [""]
                 }
             ]

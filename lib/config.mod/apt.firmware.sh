@@ -2,12 +2,9 @@
 
 # Define the options for this module
 declare -A module_options=(
-    ["author"]="Joey Turner"
-
     ["see_firmware_hold,long"]="--see-firmware"
     ["see_firmware_hold,disc"]="Check if firmware, kernel, and u-boot are held back from upgrades"
     ["see_firmware_hold,use"]="  see_firmware_hold"
-    
     
     ["hold_packages,long"]="--freeze-firmware "
     ["hold_packages,disc"]="Hold back firmware, kernel, and u-boot from upgrades"
@@ -26,19 +23,18 @@ done
 
 see_firmware_hold() {
     source /etc/armbian-release
-    packages=("linux-image-current-$LINUXFAMILY" "linux-u-boot-$BOARD-$BRANCH" "u-boot-tools")
+    packages=("linux-image-current-$LINUXFAMILY" "linux-u-boot-$BOARD-$BRANCH" "u-boot-tools ")
 
     for package in "${packages[@]}"; do
-        dpkg --get-selections | grep "$package" | grep hold
+        dpkg --get-selections | grep "$package" | grep "hold"
         if [ $? -eq 0 ]; then
             echo "$package is held back from upgrades."
-            export firmware_update=0
+            export firmware_update="unhold"
         else
             echo "$package is not held back from upgrades."
-            export firmware_update=2
+            export firmware_update="hold"
         fi
     done
-return $freeze
 }
 
 hold_packages() {

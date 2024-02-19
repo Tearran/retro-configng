@@ -3,7 +3,6 @@
 
 # Declare the module options
 declare -A module_options=( 
-    ["co_authors"]="Joey Turner"
     ["get_dependencies,long"]="get_deps=\"\""
     ["get_dependencies,disc"]="Install missing dependencies"
     ["get_dependencies,use"]="  get_dependencies \"arg1 arg2 arg3...\""
@@ -67,9 +66,10 @@ function get_dependencies() {
         fi
         echo "$dep is installed."
     done
-    echo "All dependencies are installed."
-    return 0
+#    echo "All dependencies are installed."
+#    return 0
 }
+
 function remove_dependencies() {
     see_current_apt || return 1
     for dep in "$@"; do
@@ -85,11 +85,12 @@ function remove_dependencies() {
             echo "$dep is not installed."
         fi
     done
-    echo "All specified dependencies are removed."
+    #echo "All specified dependencies are removed."
     return 0
 }
 
 update_packages() {
     echo "Updating package lists..."
     apt-get update
+    return 0
 }
