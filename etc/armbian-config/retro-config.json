@@ -27,13 +27,11 @@
                     "requirements": [""]
                 },{
                     "id": "T2",
-                    "description": "Check Freeze State (testing)",
+                    "description": "See ping see apt see firmware  (testing)",
                     "command": [
-             
                         "get_user_continue \"$( see_ping ) \n Continue?\" process_input",
                         "get_user_continue \"$( see_current_apt ) \nContinue?\" process_input",
-                        "get_user_continue \"Do you want to continue to the next part of the script?\" process_input", 
-                        "see_firmware_hold | show_message"
+                        "get_user_continue \"$( see_firmware_hold ) \nContinue?\" process_input"
                     ],
                     "show": true,
                     "requirements": [""]
