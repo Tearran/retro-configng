@@ -6,18 +6,7 @@
             "show": true,
             "sub": [
                 {
-                    "id": "S0",
-                    "description": "Check Freeze State (testing)",
-                    "command": [
-                        "see_ping | show_infobox",
-                        "see_current_apt | show_infobox",
-                        "clear",
-                        "see_firmware_hold | show_yesno"
-                    ],
-                    "show": true,
-                    "requirements": [""]
-                },{
-                    "id": "S1",
+                    "id": "T0",
                     "description": "Check Colors (testing)",
                     "command": [
                         "for i in {0..7}; do set_colors $i && echo Color code $i | show_infobox; done; clear ",
@@ -26,7 +15,7 @@
                     "show": true,
                     "requirements": [""]
                 },{
-                    "id": "A0",
+                    "id": "T1",
                     "description": "Software apt repository updtate",
                     "command": [
                         "see_current_apt | show_infobox ; "
@@ -34,10 +23,21 @@
                     "show": true,
                     "requirements": [""]
                 },{
-                    "id": "A1",
+                    "id": "T2",
                     "description": "Provides simple CLI monitoring - scrolling output",
                     "command":[ 
                         "armbianmonitor -m | show_infobox"
+                    ],
+                    "show": true,
+                    "requirements": [""]
+                },{
+                    "id": "T3",
+                    "description": "Check Freeze State (testing)",
+                    "command": [
+                        "see_ping | show_infobox",
+                        "see_current_apt | show_infobox",
+                        "clear",
+                        "see_firmware_hold | show_yesno"
                     ],
                     "show": true,
                     "requirements": [""]

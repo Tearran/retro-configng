@@ -1,29 +1,43 @@
 #!/bin/bash
 
 # This script provides a Dialog box interface for managing Armbian configuration.
+
+
+
 #
-#set -x
+# check for root privileges
 #
-# Enable Dynamic directory root
-# Simulate /usr/bin/ and /usr/lib/ directories 
+if [[ $EUID != 0 ]]; then
+	echo "This tool requires root privileges. Try again with \"sudo \" please ..." >&2
+	sleep 2
+	exit 1
+else
+	echo -e "Welcome to Armbian configuration tool. \n"
+fi
+
+
+#
+# load functions, Dynamic directory root
+#
 bin="$(dirname "${BASH_SOURCE[0]}")"
 directory="$(cd "$bin/../" && pwd )"
 file_name="$(basename "${BASH_SOURCE[0]}")"
-export filename="${file_name%.*}"
+filename="${file_name%.*}"
 # Set the path to the mod directory
 modpath=$(cd "$directory/lib" && pwd)
-export suffix="${file_name##*-}"
 json_file="$directory/etc/armbian-config/retro-config.json" || exit 1
 json_data=$(cat "$json_file")
 
-
-# Armbian information
+#
+# load Armbian information
+#
 [[ -f "/etc/armbian-release" ]] && source /etc/armbian-release
 [[ -f "/etc/os-release" ]] && source /etc/os-release
 
 
 #
 # Define the options for the module    
+#
 declare -A options
 # source the module files
 for file in "$modpath/config.mod"/*.sh
@@ -34,9 +48,11 @@ for file in "$modpath/config.mod"/*.sh
         fi
     done
 
+
 #
-# Set the dialog command
-{
+# Set the dialog command to whiptail or dialog
+#
+
     if command -v whiptail &> /dev/null
     then
         dialog_cmd="whiptail"
@@ -44,17 +60,28 @@ for file in "$modpath/config.mod"/*.sh
     then
         dialog_cmd="dialog"
     else
-    cat << EOF
-  Error: Neither 'dialog' nor 'whiptail' is installed.
-  Please install whiptail for best of them and try again.
-
-EOF
+  echo -e "Error: Neither 'dialog' nor 'whiptail' is installed.\n  Please install whiptail for best of them and try again."
 	exit 1
     fi
-}
 
 #
-# Help mesaage
+# check for internet connection to install dependencies
+#
+function check_dependencies_and_firmware() {
+
+# Start the see_ping and see_firmware_hold commands in the background
+see_ping &
+see_firmware_hold &
+# Display the loading message
+echo "Checking system condition ..." | show_infobox
+}
+
+
+check_dependencies_and_firmware
+
+#
+# Load Mod Help mesaage
+#
 function see_help() {
     help_message="Usage: ${0##*/} [options] [arguments] \n\nOptions:\n"
     # Iterate over the options
@@ -71,16 +98,12 @@ function see_help() {
 
     echo -e "$help_message"
 }
-if [[ "$(id -u)" == "0" ]]; then
-    # Case statement for root user
+
+[[ $1 == "--help" || $1 == "-h" ]] && see_help | show_message && exit 0;
+
 while true; do
     generate_top_menu 
 done
-else
- echo "You must be root to run this script"
-    exit 1
-fi
 
-#[[ "$(id -u)" == "0" ]] && generate_top_menu
 exit 0
 

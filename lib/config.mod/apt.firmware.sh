@@ -2,15 +2,15 @@
 
 # Define the options for this module
 declare -A module_options=(
-    ["see_firmware_hold,long"]="--see-firmware"
+    ["see_firmware_hold,long"]="see-firmware"
     ["see_firmware_hold,disc"]="Check if firmware, kernel, and u-boot are held back from upgrades"
     ["see_firmware_hold,use"]="  see_firmware_hold"
     
-    ["hold_packages,long"]="--freeze-firmware "
+    ["hold_packages,long"]="freeze-firmware"
     ["hold_packages,disc"]="Hold back firmware, kernel, and u-boot from upgrades"
     ["hold_packages,use"]="  hold_packages"
 
-    ["unhold_packages,long"]="--unfreeze-firmware"
+    ["unhold_packages,long"]="unfreeze-firmware"
     ["unhold_packages,disc"]="Unhold firmware, kernel, and u-boot from upgrades"
     ["unhold_packages,use"]="  unhold_packages"
 )
@@ -28,10 +28,10 @@ see_firmware_hold() {
     for package in "${packages[@]}"; do
         dpkg --get-selections | grep "$package" | grep "hold"
         if [ $? -eq 0 ]; then
-            echo "$package is held back from upgrades."
+            #echo "$package is held back from upgrades."
             export firmware_update="unhold"
         else
-            echo "$package is not held back from upgrades."
+            #echo "$package is not held back from upgrades."
             export firmware_update="hold"
         fi
     done
