@@ -28,10 +28,10 @@ see_firmware_hold() {
     for package in "${packages[@]}"; do
         dpkg --get-selections | grep "$package" | grep "hold"
         if [ $? -eq 0 ]; then
-            #echo "$package is held back from upgrades."
+            echo " $package is held back from upgrades."
             export firmware_update="unhold"
         else
-            #echo "$package is not held back from upgrades."
+            echo " $package is not held back from upgrades."
             export firmware_update="hold"
         fi
     done
@@ -52,5 +52,38 @@ unhold_packages() {
 
     for package in "${packages[@]}"; do
         sudo apt-mark unhold "$package"
+    done
+}
+
+#############################
+# new 
+# Function to check the hold status of the packages
+check_hold_status() {
+    source /etc/armbian-release
+    packages=("linux-image-current-$LINUXFAMILY" "linux-u-boot-$BOARD-$BRANCH" "u-boot-tools")
+
+    for package in "${packages[@]}"; do
+        dpkg --get-selections | grep "$package" | grep "hold"
+        if [ $? -eq 0 ]; then
+            echo "$package is held back from upgrades."
+            export firmware_update="unhold"
+        else
+            echo "$package is not held back from upgrades."
+            export firmware_update="hold"
+        fi
+    done
+}
+
+# Function to toggle the hold status of the packages
+toggle_hold_status() {
+    source /etc/armbian-release
+    packages=("linux-image-current-$LINUXFAMILY" "linux-u-boot-$BOARD-$BRANCH" "u-boot-tools")
+
+    for package in "${packages[@]}"; do
+        if [[ $firmware_update == "unhold" ]]; then
+            sudo apt-mark unhold "$package"
+        else
+            sudo apt-mark hold "$package"
+        fi
     done
 }

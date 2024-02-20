@@ -21,10 +21,10 @@ function see_ping() {
 	# Check for internet connection
 	for server in "${servers[@]}"; do
 	    if ping -q -c 1 -W 1 $server >/dev/null; then
-	        #echo "Internet connection is present."
+	        echo "Internet connection is present."
 			break
 	    else
-	        #echo "Internet connection: Failed"
+	        echo "Internet connection: Failed"
 			sleep 1
 	    fi
 	done

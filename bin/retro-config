@@ -67,17 +67,8 @@ for file in "$modpath/config.mod"/*.sh
 #
 # check for internet connection to install dependencies
 #
-function check_dependencies_and_firmware() {
-
 # Start the see_ping and see_firmware_hold commands in the background
-see_ping &
-see_firmware_hold &
-# Display the loading message
-echo "Checking system condition ..." | show_infobox
-}
-
-
-check_dependencies_and_firmware
+show_infobox < <(see_ping & check_hold_status & wait)
 
 #
 # Load Mod Help mesaage
