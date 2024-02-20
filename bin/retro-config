@@ -56,7 +56,6 @@ source_modules() {
         done
 } 
 
-
 if [[ -f "$HOME/.local/lib/config.its.sh" ]] ; then
     source "$libpath/config.its.sh"
 else
@@ -79,45 +78,36 @@ fi
 
 
 #
-# check for internet connection to install dependencies
+# Load Module mesaage
 #
-#get_user_continue "Do you want to continue to the next part of the script?" process_input
-#see_ping | show_infobox
-#check_hold_status | show_infobox
-#get_user_input process_input | show_message
-#exit 0
-
-
-#
-# Load Mod Help mesaage
-#
-function see_help() {
-    help_message="Usage: ${0##*/} [options] [arguments] \n\nOptions:\n"
+function see_use() {
+    mod_message="Usage: ${0##*/} [options] [arguments] \n\nOptions:\n"
     # Iterate over the options
     for key in "${!options[@]}"; do
         # Split the key into function_name and type
         IFS=',' read -r function_name type <<< "$key"
         # If the type is 'long', append the option to the help message
         if [[ "$type" == "long" ]]; then
-            #help_message+=" ${options["$function_name,long"]}\n"
-            help_message+="  ${options["$function_name,disc"]}\n"
-            help_message+="  ${options["$function_name,use"]}\n"
+            #mod_message+=" ${options["$function_name,long"]}\n"
+            mod_message+="  ${options["$function_name,disc"]}\n"
+            mod_message+="  ${options["$function_name,use"]}\n"
         fi
     done
 
-    echo -e "$help_message"
+    echo -e "$mod_message"
 }
 
 
 #
 # Show Help mesaage
 #
-[[ $1 == "--help" || $1 == "-h" ]] && see_help | show_message && exit 0;
+[[ $1 == "--use" || $1 == "-u" ]] && see_use && exit 0;
 
 
 #
 # Load the TUI
 while true; do
+    clear
     generate_top_menu || exit 1
 done
 

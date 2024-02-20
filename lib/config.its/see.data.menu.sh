@@ -108,11 +108,11 @@ function generate_top_menu() {
             local condition_result=$(eval $condition)
             # If the function returns a truthy value, add the menu item to the menu
             if [[ $condition_result ]]; then
-                menu_options+=("$id" "$description")
+                menu_options+=("$id" "  -  $description")
             fi
         else
             # If the condition field is empty or null, add the menu item to the menu
-            menu_options+=("$id" "$description")
+            menu_options+=("$id" "  -  $description")
         fi
     done < <(jq -r '.menu[] | select(.show==true) | "\(.id)\n\(.description)\n\(.condition)"' "$json_file")
 
@@ -141,7 +141,7 @@ function generate_menu() {
     while IFS= read -r id
     do
         IFS= read -r description
-        submenu_options+=("$id" "$description")
+        submenu_options+=("$id" "  -  $description")
     done < <(jq -r --arg parent_id "$parent_id" '.menu[] | .. | objects | select(.id==$parent_id) | .sub[]? | select(.show==true) | "\(.id)\n\(.description)"' "$json_file")
     set_colors 2 # "$?"
 

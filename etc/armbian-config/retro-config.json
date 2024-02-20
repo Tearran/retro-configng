@@ -2,7 +2,7 @@
     "menu": [
         {
             "id": "Tests",
-            "description": " Play ground",
+            "description": "Play ground",
             "show": true,
             "sub": [
                 {
@@ -27,7 +27,7 @@
                     "requirements": [""]
                 },{
                     "id": "T2",
-                    "description": "See ping see apt see firmware  (testing)",
+                    "description": "See ping, see apt, & see firmware  (testing)",
                     "command": [
                         "get_user_continue \"$( see_ping ) \n Continue?\" process_input",
                         "get_user_continue \"$( see_current_apt ) \nContinue?\" process_input",
@@ -37,12 +37,43 @@
                     "requirements": [""]
                 },{
                     "id": "T3",
-                    "description": "Provides simple CLI monitoring - scrolling output",
+                    "description": "Pipe armbianmonitor -m to show_infobox",
                     "command":[ 
                         "armbianmonitor -m | show_infobox"
                     ],
                     "show": true,
                     "requirements": [""]
+                }
+            ]
+        }, {
+            "id": "Network",
+            "description": "Wireless, Ethernet, and Network settings",
+            "show": true,
+            "sub": [
+                {
+                    "id": "N0",
+                    "description": "Manage wifi network connections",
+                    "command": [
+                        "nmtui connect"
+                    ],
+                    "show": true,
+                    "requirements": ["nmtui"]
+                }
+            ]
+        },
+        {
+            "id": "Localisation",
+            "description": "Locale Language Region Time Keyboard",
+            "show": false,
+            "sub": [
+                {
+                    "id": "L1",
+                    "description": "Change Local Timezone (WIP)",
+                    "command": [
+                        "timedatectl set-timezone "
+                    ],
+                    "show": true,
+                    "requirements": ["timedatectl"]
                 }
             ]
         },
@@ -53,9 +84,9 @@
             "sub": [
                 {
                     "id": "H0",
-                    "description": "Help (WIP)",
+                    "description": "Example Uses (WIP)",
                     "command": [
-                        "see_help | show_message"
+                        "see_use | show_message"
                     ],
                     "show": true,
                     "requirements": [""]

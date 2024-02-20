@@ -13,23 +13,18 @@
 #
 declare -A module_options=( 
    
-    ["show_menu,long"]="--see-menu"
+    ["show_menu,long"]="see-menu"
     ["show_menu,disc"]="Show a TUI menu and get the user's choice"
     ["show_menu,use"]="  show_menu"
     
-    ["show_message,long"]="--message"
+    ["show_message,long"]="message"
     ["show_message,disc"]="Display a message box"
-    ["show_message,use"]="  show_message"
+    ["show_message,use"]="  echo \"message pipe\" | show_message"
     
     
-    ["show_infobox,long"]="--infobox"
+    ["show_infobox,long"]="infobox"
     ["show_infobox,disc"]="Display a infobox with a message"
-    ["show_infobox,use"]="  show_infobox"
-    
-    
-    ["show_yesno,long"]="--coninue"
-    ["show_yesno,disc"]="Display a Yes/No message box"
-    ["show_yesno,use"]="  show_yesno"
+    ["show_infobox,use"]="  echo \"read line info pipe\" |  show_infobox"
 
 )
 
@@ -116,7 +111,7 @@ show_infobox() {
             fi
             # Display the lines in the buffer in the infobox
 
-            TERM=ansi $DIALOG --title "$BACKTITLE" --infobox "$(printf "%s\n" "${buffer[@]}" )" 16 80
+            TERM=ansi $DIALOG --title "$BACKTITLE" --infobox "$(printf "%s\n" "${buffer[@]}" )" 18 90
             sleep 0.5
         done
     else
