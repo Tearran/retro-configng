@@ -9,11 +9,11 @@
 #
 # check for root privileges
 #
-#if [[ $EUID != 0 ]]; then
-#	echo "This tool requires root privileges. Try again with \"sudo \" please ..." >&2
-#	sleep 2
-#	exit 1
-#fi
+if [[ $EUID != 0 ]]; then
+	echo "This tool requires root privileges. Try again with \"sudo \" please ..." >&2
+	sleep 2
+	exit 1
+fi
 
 
 #
@@ -56,7 +56,7 @@ source_modules() {
         done
 } 
 
-if [[ -f "$HOME/.local/lib/config.its.sh" ]] ; then
+if [[ -f "$libpath/config.its.sh" ]] ; then
     source "$libpath/config.its.sh"
 else
     source_modules "$libpath/config.its"
