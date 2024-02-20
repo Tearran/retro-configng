@@ -28,6 +28,8 @@ modpath=$(cd "$directory/lib" && pwd)
 json_file="$directory/etc/armbian-config/retro-config.json" || exit 1
 json_data=$(cat "$json_file")
 libpath="$directory/lib"
+
+
 #
 # load Armbian information
 #
@@ -52,7 +54,7 @@ source_modules() {
                 source "$file" 
             fi
         done
-} # source_modules "./lib..."
+} 
 
 
 if [[ -f "$HOME/.local/lib/config.its.sh" ]] ; then
@@ -85,8 +87,6 @@ fi
 #get_user_input process_input | show_message
 #exit 0
 
-#set_user_input "/path/to/your/file.txt"
-#[[ -f "/path/to/your/file.txt" ]] && cat "/path/to/your/file.txt"
 
 #
 # Load Mod Help mesaage

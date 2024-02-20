@@ -9,8 +9,10 @@
                     "id": "T0",
                     "description": "Check Colors (testing)",
                     "command": [
-                        "for i in {0..7}; do set_colors $i && echo Color code $i | show_infobox; done; clear ",
-                        "set_colors 0 && echo 'Colors 0-7 test' | show_message ;"
+                        "get_user_continue \"This will iterate 8 colors \nDo you want to continue?\" process_input", 
+                        "for i in {0..7}; do set_colors $i && echo Color code $i | show_infobox; done;",
+                        "clear && set_colors 0", 
+                        " echo 'Colors 0-7 test complete' | show_message ;"
                     ],
                     "show": true,
                     "requirements": [""]
@@ -18,28 +20,28 @@
                     "id": "T1",
                     "description": "Software apt repository updtate",
                     "command": [
-                        "see_current_apt | show_infobox ; "
+                        "get_user_continue \"This will check when apt was updated and if ts running \nDo you want to continue?\" process_input", 
+                        "see_current_apt | show_message ; "
                     ],
                     "show": true,
                     "requirements": [""]
                 },{
                     "id": "T2",
-                    "description": "Provides simple CLI monitoring - scrolling output",
-                    "command":[ 
-                        "armbianmonitor -m | show_infobox"
+                    "description": "Check Freeze State (testing)",
+                    "command": [
+             
+                        "get_user_continue \"$( see_ping ) \n Continue?\" process_input",
+                        "get_user_continue \"$( see_current_apt ) \nContinue?\" process_input",
+                        "get_user_continue \"Do you want to continue to the next part of the script?\" process_input", 
+                        "see_firmware_hold | show_message"
                     ],
                     "show": true,
                     "requirements": [""]
                 },{
                     "id": "T3",
-                    "description": "Check Freeze State (testing)",
-                    "command": [
-                        "test=$( see_ping ) ; echo $test | show_infobox ;",
-                        "get_user_continue \"$test\" process_input",
-                        "see_current_apt | show_infobox",
-                        "clear",
-                        "get_user_continue \"Do you want to continue to the next part of the script?\" process_input", 
-                        "see_firmware_hold | show_message"
+                    "description": "Provides simple CLI monitoring - scrolling output",
+                    "command":[ 
+                        "armbianmonitor -m | show_infobox"
                     ],
                     "show": true,
                     "requirements": [""]
