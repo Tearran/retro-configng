@@ -1,22 +1,28 @@
 #!/bin/bash
 
+
+#
 # Declare the module options
+#
 declare -A module_options=( 
-    ["co_authors"]="Tearran"
-    ["set_colors,long"]="--set-colors"
-    ["set_colors,disc"]="Check connection with fallback DNS"
-    ["set_colors,use"]="  set_colors"
+    ["set_colors,long"]="set-colors=\"0\""
+    ["set_colors,disc"]="set the colors"
+    ["set_colors,use"]="  set_colors (number 0-1)"
 )
 
+
+#
 # Merge the module options into the global options
+#
 for key in "${!module_options[@]}"; do
     options["$key"]="${module_options[$key]}"
 done
 
-############################
-# colors
-############################    
-set_colors() {
+
+#
+# Function to check connection with fallback DNS
+# 
+function set_colors() {
     local color_code=$1
 
     if [ "$dialog_cmd" = "whiptail" ]; then
@@ -30,7 +36,11 @@ set_colors() {
     fi
 }
 
-set_newt_colors() {
+
+#
+# Function to set the colors for newt
+#
+function set_newt_colors() {
     local color_code=$1
     case $color_code in
         0) color="black" ;;
@@ -48,7 +58,11 @@ set_newt_colors() {
     export NEWT_COLORS="root=,$color"
 }
 
-set_term_colors() {
+
+#
+# Function to set the colors for terminal
+#
+function set_term_colors() {
     local color_code=$1
     case $color_code in
         0) color="\e[40m" ;;  # black
@@ -64,17 +78,25 @@ set_term_colors() {
     echo -e "$color"
 }
 
-reset_colors() {
+
+#
+# Function to reset the colors
+#
+function reset_colors() {
     echo -e "\e[0m"
 }
 
-#############################
+
+#
+# Trap to reset the colors
+#
 trap reset_colors EXIT
-#############################
 
 
-
-generate_top_menu() {
+#
+# Function to generate the top menu
+#
+function generate_top_menu() {
     color_option="green"
     local menu_options=()
     while IFS= read -r id
@@ -107,7 +129,11 @@ generate_top_menu() {
     fi
 }
 
-generate_menu() {
+
+#
+# Function to generate the submenu
+#
+function generate_menu() {
     local parent_id=$1
 
     # Get the submenu options for the current parent_id
@@ -142,7 +168,11 @@ generate_menu() {
     fi
 }
 
-execute_command() {
+
+#
+# Function to execute the command
+#
+function execute_command() {
     local id=$1
     local commands=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .command[]' "$json_file")
     for command in "${commands[@]}"; do

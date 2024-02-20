@@ -1,6 +1,8 @@
 #!/bin/bash
 
+#
 # Define the options for this module
+#
 declare -A module_options=(
     ["see_firmware_hold,long"]="see-firmware"
     ["see_firmware_hold,disc"]="Check if firmware, kernel, and u-boot are held back from upgrades"
@@ -15,13 +17,19 @@ declare -A module_options=(
     ["unhold_packages,use"]="  unhold_packages"
 )
 
+
+#
 # Merge the module options into the global options
+#
 for key in "${!module_options[@]}"; do
     options["$key"]="${module_options[$key]}"
 done
 
 
-see_firmware_hold() {
+#
+# check the hold status of the packages
+#
+function see_firmware_hold() {
     source /etc/armbian-release
     packages=("linux-image-current-$LINUXFAMILY" "linux-u-boot-$BOARD-$BRANCH" "u-boot-tools ")
 
@@ -37,7 +45,11 @@ see_firmware_hold() {
     done
 }
 
-hold_packages() {
+
+#
+# Function to hold back firmware, kernel, and u-boot from upgrades
+#
+function hold_packages() {
     source /etc/armbian-release
     packages=("linux-image-current-$LINUXFAMILY" "linux-u-boot-$BOARD-$BRANCH" "u-boot-tools")
 
@@ -46,7 +58,11 @@ hold_packages() {
     done
 }
 
-unhold_packages() {
+
+#
+# Function to unhold firmware, kernel, and u-boot from upgrades
+#
+function unhold_packages() {
     source /etc/armbian-release
     packages=("linux-image-current-$LINUXFAMILY" "linux-u-boot-$BOARD-$BRANCH" "u-boot-tools")
 
@@ -55,10 +71,11 @@ unhold_packages() {
     done
 }
 
-#############################
-# new 
+
+# 
 # Function to check the hold status of the packages
-check_hold_status() {
+#
+function check_hold_status() {
     source /etc/armbian-release
     packages=("linux-image-current-$LINUXFAMILY" "linux-u-boot-$BOARD-$BRANCH" "u-boot-tools")
 
@@ -74,8 +91,11 @@ check_hold_status() {
     done
 }
 
+
+#
 # Function to toggle the hold status of the packages
-toggle_hold_status() {
+#
+function toggle_hold_status() {
     source /etc/armbian-release
     packages=("linux-image-current-$LINUXFAMILY" "linux-u-boot-$BOARD-$BRANCH" "u-boot-tools")
 

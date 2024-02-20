@@ -1,19 +1,19 @@
 #!/bin/bash
 
-# This script provides a Dialog box interface for managing Armbian configuration.
 
+#
+# This script provides a Dialog box interface for managing Armbian configuration.
+#
 
 
 #
 # check for root privileges
 #
-if [[ $EUID != 0 ]]; then
-	echo "This tool requires root privileges. Try again with \"sudo \" please ..." >&2
-	sleep 2
-	exit 1
-else
-	echo -e "Welcome to Armbian configuration tool. \n"
-fi
+#if [[ $EUID != 0 ]]; then
+#	echo "This tool requires root privileges. Try again with \"sudo \" please ..." >&2
+#	sleep 2
+#	exit 1
+#fi
 
 
 #
@@ -27,7 +27,7 @@ filename="${file_name%.*}"
 modpath=$(cd "$directory/lib" && pwd)
 json_file="$directory/etc/armbian-config/retro-config.json" || exit 1
 json_data=$(cat "$json_file")
-
+libpath="$directory/lib"
 #
 # load Armbian information
 #
@@ -39,36 +39,54 @@ json_data=$(cat "$json_file")
 # Define the options for the module    
 #
 declare -A options
-# source the module files
-for file in "$modpath/config.mod"/*.sh
-    do
-        if [[ -f "$file" ]]; then
-            source "$file" 
-            #cat "$file" >> "$directory/$monolith_name"
-        fi
-    done
 
+
+#
+# Load the module files
+#
+source_modules() {
+    local modpath="$1"
+    for file in "$modpath"/*.sh
+        do
+            if [[ -f "$file" ]]; then
+                source "$file" 
+            fi
+        done
+} # source_modules "./lib..."
+
+
+if [[ -f "$HOME/.local/lib/config.its.sh" ]] ; then
+    source "$libpath/config.its.sh"
+else
+    source_modules "$libpath/config.its"
+fi
 
 #
 # Set the dialog command to whiptail or dialog
 #
+if command -v whiptail &> /dev/null
+then
+    dialog_cmd="whiptail"
+elif command -v dialog &> /dev/null
+then
+    dialog_cmd="dialog"
+else
+echo -e "Error: Neither 'dialog' nor 'whiptail' is installed.\n  Please install whiptail for best of them and try again."
+exit 1
+fi
 
-    if command -v whiptail &> /dev/null
-    then
-        dialog_cmd="whiptail"
-    elif command -v dialog &> /dev/null
-    then
-        dialog_cmd="dialog"
-    else
-  echo -e "Error: Neither 'dialog' nor 'whiptail' is installed.\n  Please install whiptail for best of them and try again."
-	exit 1
-    fi
 
 #
 # check for internet connection to install dependencies
 #
-# Start the see_ping and see_firmware_hold commands in the background
-show_infobox < <(see_ping & check_hold_status & wait)
+#get_user_continue "Do you want to continue to the next part of the script?" process_input
+#see_ping | show_infobox
+#check_hold_status | show_infobox
+#get_user_input process_input | show_message
+#exit 0
+
+#set_user_input "/path/to/your/file.txt"
+#[[ -f "/path/to/your/file.txt" ]] && cat "/path/to/your/file.txt"
 
 #
 # Load Mod Help mesaage
@@ -81,7 +99,7 @@ function see_help() {
         IFS=',' read -r function_name type <<< "$key"
         # If the type is 'long', append the option to the help message
         if [[ "$type" == "long" ]]; then
-            help_message+=" ${options["$function_name,long"]}\n"
+            #help_message+=" ${options["$function_name,long"]}\n"
             help_message+="  ${options["$function_name,disc"]}\n"
             help_message+="  ${options["$function_name,use"]}\n"
         fi
@@ -90,10 +108,17 @@ function see_help() {
     echo -e "$help_message"
 }
 
+
+#
+# Show Help mesaage
+#
 [[ $1 == "--help" || $1 == "-h" ]] && see_help | show_message && exit 0;
 
+
+#
+# Load the TUI
 while true; do
-    generate_top_menu 
+    generate_top_menu || exit 1
 done
 
 exit 0

@@ -1,19 +1,26 @@
 #!/bin/bash
 
-
+#
 # Declare the module options
+#
 declare -A module_options=( 
-
-    ["see_ping,long"]="--ping"
+	["see_ping,long"]="see-ping"
     ["see_ping,disc"]="Check connection with fallback DNS"
     ["see_ping,use"]="  see_ping"
 )
 
+
+#
 # Merge the module options into the global options
+#
 for key in "${!module_options[@]}"; do
     options["$key"]="${module_options[$key]}"
 done
 
+
+#
+# Function to check connection with fallback DNS
+#
 function see_ping() {
 	# List of servers to ping
 	servers=("1.1.1.1" "8.8.8.8")

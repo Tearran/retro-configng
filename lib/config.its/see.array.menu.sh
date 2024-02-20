@@ -1,18 +1,27 @@
 #!/bin/bash
 
+
+#
 # Declare the module options
+#
 declare -A module_options=( 
-    ["co_authors"]="Joey Turner"
-    ["parse_json,long"]="--parse-json"
+    ["parse_json,long"]="parse-json"
     ["parse_json,disc"]="Parse Data for debug and testing"
     ["parse_json,use"]="  parse_json"
 )
 
+
+#
 # Merge the module options into the global options
+#
 for key in "${!module_options[@]}"; do
     options["$key"]="${module_options[$key]}"
 done
 
+
+#
+# Function to parse the JSON data
+#
 function parse_json() {
     # Read the JSON file into a variable
     json=$(cat $directory/etc/armbian-config/retro-config.json)
@@ -52,6 +61,3 @@ function parse_json() {
         done
     done
 }
-
-# Call the function
-# parse_json

@@ -1,7 +1,9 @@
 #!/bin/bash
 
 
-# Declare the module options
+#
+# Define the options for this module
+#
 declare -A module_options=( 
     ["get_dependencies,long"]="get_deps=\"\""
     ["get_dependencies,disc"]="Install missing dependencies"
@@ -11,16 +13,22 @@ declare -A module_options=(
     ["remove_dependencies,disc"]="Remove installed dependencies"
     ["remove_dependencies,use"]="  remove_dependencies \"arg1 arg2 arg3...\"" 
 
-    ["get_current_apt,long"]="--see-apt"
+    ["get_current_apt,long"]="see-apt"
     ["get_current_apt,disc"]="Check if apt, apt-get, or dpkg is currently running, and package list is up-to-date"
     ["get_current_apt,use"]="  see_current_apt"
 )
 
+#
 # Merge the module options into the global options
+#
 for key in "${!module_options[@]}"; do
     options["$key"]="${module_options[$key]}"
 done
 
+
+#
+# Function to check if apt, apt-get, or dpkg is currently running, and package list is up-to-date
+#
 see_current_apt() {
     # Number of seconds in a day
     local day=86400
@@ -34,7 +42,7 @@ see_current_apt() {
     # Calculate the number of seconds since the last update
     local elapsed=$(( now - update ))
 
-if ps -C apt-get,apt,dpkg >/dev/null; then
+    if ps -C apt-get,apt,dpkg >/dev/null; then
         echo "apt-get, apt, or dpkg is currently running."
         return 1  # The processes are running
     else
@@ -52,6 +60,10 @@ if ps -C apt-get,apt,dpkg >/dev/null; then
     fi
 }
 
+
+#
+# Function to install missing dependencies
+#
 function get_dependencies() {
     see_current_apt || return 1
     for dep in "$@"; do
@@ -67,9 +79,13 @@ function get_dependencies() {
         echo "$dep is installed."
     done
 #    echo "All dependencies are installed."
-#    return 0
+   return 0
 }
 
+
+#
+# Function to remove installed dependencies
+#
 function remove_dependencies() {
     see_current_apt || return 1
     for dep in "$@"; do
@@ -89,6 +105,9 @@ function remove_dependencies() {
     return 0
 }
 
+#
+# Function to update the package lists (WIP)
+#
 update_packages() {
     echo "Updating package lists..."
     apt-get update

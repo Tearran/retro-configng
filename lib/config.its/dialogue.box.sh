@@ -1,14 +1,18 @@
 #!/bin/bash
 
 
+#
 # Check if whiptail is installed
-
+#
 [[ -x "$(command -v dialog)" ]] && export DIALOG="dialog"
 [[ -x "$(command -v whiptail)" ]] && export DIALOG="whiptail"
+
+
+#
 # Define the options for this module
+#
 declare -A module_options=( 
-    ["author"]="Joey Turner"
-    
+   
     ["show_menu,long"]="--see-menu"
     ["show_menu,disc"]="Show a TUI menu and get the user's choice"
     ["show_menu,use"]="  show_menu"
@@ -29,11 +33,17 @@ declare -A module_options=(
 
 )
 
+#
 # Merge the module options into the global options
+#
 for key in "${!module_options[@]}"; do
     options["$key"]="${module_options[$key]}"
 done
 
+
+#
+# Function to get user input (WIP)
+#
 function get_input() {
     input=$($DIALOG --inputbox "Please enter your input: " 10 60 3>&1 1>&2 2>&3)
     exitstatus=$?
@@ -45,6 +55,9 @@ function get_input() {
 }
 
 
+#
+# Function to display a menu and get the user's choice
+#
 show_menu(){
     # Get the input and convert it into an array of options
     inpu_raw=$(cat)
@@ -68,19 +81,10 @@ show_menu(){
 	fi
 	}
 
-show_message00(){
 
-    # Read the input from the pipe continuously until there is no more input
-    input=""
-    while read -r line; do
-        input+="$line\n"
-    done
-
-    # Display the "OK" message box with the input data
-    [[ $DIALOG != "bash" ]] && $DIALOG --title "Message Box" --msgbox "$input" 0 0
-
-    }
-
+#
+# Function to display a message box
+#
 show_message() {
     # Read the input from the pipe
     input=$(cat)
@@ -94,6 +98,10 @@ show_message() {
     fi
 }
 
+
+#
+# Function to display an infobox with a message
+#
 show_infobox() {
     export TERM=ansi
     local input
@@ -119,28 +127,75 @@ show_infobox() {
         echo -ne '\033[3J' # clear the screen
 }
 
-show_yesno() {
-    # Check if there's any input from the pipe
-    if [ -p /dev/stdin ]; then
-        # Read the input from the pipe
-        input=$(cat)
+
+#
+# Function to get user input (WIP)
+#
+set_user_input() {
+    # Get the file path from the function argument
+    local file="$1"
+
+    # Use whiptail to get user input
+    local user_input=$($DIALOG --inputbox "Enter your text" 8 78 --title "Input Box" 3>&1 1>&2 2>&3)
+
+    # Check if the user didn't cancel the input box
+    if [ $? = 0 ]; then
+        # Save the user input to the file
+        echo "$user_input" > "$file"
     else
-        # If there's no input, set a default message
-        input="Do you want to continue?"
+        echo "User cancelled."
     fi
 
-    # Display the Yes/No dialog box with the input data
-    if [[ $DIALOG != "bash" ]]; then
-        if $DIALOG --title "Yes/No Dialog" --yesno "$input" 0 0; then
-            return 0  # User selected Yes
-        else
-            exit 1  # User selected No or closed the dialog
-        fi
+}
+# usage:
+# get_user_input "$directory/test.txt"
+# [[ -f "$directory/test.txt" ]] && cat "$directory/test.txt" | show_message
+
+
+#
+# Function to get user input (WIP)
+#
+get_user_input() {
+    local input=$($DIALOG --inputbox "Please enter your input: " 10 60 3>&1 1>&2 2>&3)
+
+    if [ $? = 0 ]; then
+        $1 "$input"
     else
-        echo "$input"
-        echo "No dialog program available. Please run this script in an environment with 'dialog' or 'whiptail'."
-        exit 1
+        echo "You cancelled."
+    fi
+}
+# usage:
+# get_user_input "Please enter your input: " process_input "Please enter your input: "
+
+
+
+#
+# Function to display a Yes/No dialog box (WIP)
+#
+get_user_continue() {
+    local message="$1"
+    local next_action=$2
+
+    if $($DIALOG --yesno "$message" 10 60 3>&1 1>&2 2>&3); then
+        $next_action
+    else
+        $next_action "No"
     fi
 }
 
+# Usage
+#get_user_continue process_input
 
+
+#
+# Function to process the user's input
+#
+# Function to process the user's choice
+process_input() {
+    local input="$1"
+    if [ "$input" = "No" ]; then
+        exit 1
+    else
+        echo "You entered: $input"
+   fi
+}
