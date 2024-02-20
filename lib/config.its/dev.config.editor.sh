@@ -74,7 +74,7 @@ consolidate_files() {
     done
 } 
 
- consolidate_files "$libpath/config.its" "$libpath/config.its.sh" 
+# consolidate_files "$libpath/config.its" "$libpath/config.its.sh" 
 
 
 
