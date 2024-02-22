@@ -3,19 +3,11 @@
 #
 # Declare the module options
 #
-declare -A module_options=( 
-	["see_ping,long"]="see-ping"
-    ["see_ping,disc"]="Check connection with fallback DNS"
-    ["see_ping,use"]="  see_ping"
+module_options+=(
+["see_ping,feature"]="see_ping"
+["see_ping,desc"]="Check for internet connection"
+["see_ping,example"]=""
 )
-
-
-#
-# Merge the module options into the global options
-#
-for key in "${!module_options[@]}"; do
-    options["$key"]="${module_options[$key]}"
-done
 
 
 #

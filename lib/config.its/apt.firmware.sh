@@ -3,20 +3,20 @@
 #
 # Define the options for this module
 #
-declare -A module_options=(
-    ["see_firmware_hold,long"]="see-firmware"
-    ["see_firmware_hold,disc"]="Check if firmware, kernel, and u-boot are held back from upgrades"
-    ["see_firmware_hold,use"]="  see_firmware_hold"
-    
-    ["hold_packages,long"]="freeze-firmware"
-    ["hold_packages,disc"]="Hold back firmware, kernel, and u-boot from upgrades"
-    ["hold_packages,use"]="  hold_packages"
+declare -A module_options
+module_options+=(
+["see_firmware_hold,feature"]="see_firmware_hold"
+["see_firmware_hold,desc"]="Check if firmware, kernel, and u-boot are held back from upgrades"
+["see_firmware_hold,example"]="TODO:Example"
 
-    ["unhold_packages,long"]="unfreeze-firmware"
-    ["unhold_packages,disc"]="Unhold firmware, kernel, and u-boot from upgrades"
-    ["unhold_packages,use"]="  unhold_packages"
+["unhold_packages,feature"]="unhold_packages"
+["unhold_packages,desc"]="Unhold firmware, kernel, and u-boot from upgrades"
+["unhold_packages,example"]="TODO:Example"
+
+["hold_packages,feature"]="hold_packages"
+["hold_packages,desc"]="Hold firmware, kernel, and u-boot from upgrades"
+["hold_packages,example"]="TODO:Example"
 )
-
 
 #
 # Merge the module options into the global options

@@ -8,32 +8,39 @@
 [[ -x "$(command -v whiptail)" ]] && export DIALOG="whiptail"
 
 
-#
-# Define the options for this module
-#
-declare -A module_options=( 
-   
-    ["show_menu,long"]="see-menu"
-    ["show_menu,disc"]="Show a TUI menu and get the user's choice"
-    ["show_menu,use"]="  show_menu"
-    
-    ["show_message,long"]="message"
-    ["show_message,disc"]="Display a message box"
-    ["show_message,use"]="  echo \"message pipe\" | show_message"
-    
-    
-    ["show_infobox,long"]="infobox"
-    ["show_infobox,disc"]="Display a infobox with a message"
-    ["show_infobox,use"]="  echo \"read line info pipe\" |  show_infobox"
+module_options+=(
+["get_input,feature"]="get_input"
+["get_input,desc"]="TODO:DESC"
+["get_input,example"]="TODO:Example"
 
+["show_menu,feature"]="show_menu"
+["show_menu,desc"]="Check for internet connection"
+["show_menu,example"]="TODO:Example"
+
+["show_message,feature"]="show_message"
+["show_message,desc"]="Check for internet connection"
+["show_message,example"]="TODO:Example"
+
+["show_infobox,feature"]="show_infobox"
+["show_infobox,desc"]="Show info box"
+["show_infobox,example"]="TODO:Example"
+
+["set_user_input,feature"]="set_user_input"
+["set_user_input,desc"]="Display a input dialog"
+["set_user_input,example"]="set_user_input"
+
+["get_user_input,feature"]="get_user_input"
+["get_user_input,desc"]="Display set_user_input results"
+["get_user_input,example"]="get_user_input"
+
+["get_user_continue,feature"]="get_user_continue"
+["get_user_continue,desc"]="Display a Yes/No dialog box (WIP)"
+["get_user_continue,example"]="get_user_continue"
+
+["process_input,feature"]="process_input"
+["process_input,desc"]="TODO:Desc"
+["process_input,example"]="process_input"
 )
-
-#
-# Merge the module options into the global options
-#
-for key in "${!module_options[@]}"; do
-    options["$key"]="${module_options[$key]}"
-done
 
 
 #

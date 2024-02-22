@@ -4,19 +4,15 @@
 #
 # Declare the module options
 #
-declare -A module_options=( 
-    ["set_colors,long"]="set-colors=\"0\""
-    ["set_colors,disc"]="set the colors"
-    ["set_colors,use"]="  set_colors (number 0-1)"
+module_options+=(
+["set_colors,feature"]="set_colors"
+["set_colors,desc"]="Set a background color"
+["set_colors,example"]="(number 0-7)"
+
+["execute_command,feature"]="execute_command"
+["execute_command,desc"]="Execute a command from the array"
+["execute_command,example"]="(WIP)"
 )
-
-
-#
-# Merge the module options into the global options
-#
-for key in "${!module_options[@]}"; do
-    options["$key"]="${module_options[$key]}"
-done
 
 
 #

@@ -4,12 +4,20 @@
 #
 # Declare the module options
 #
-declare -A module_options=( 
-    ["serve_debug"]="--serve-debug"
-    ["serve_debug,disc"]="Serve the debug server"
-    ["serve_debug,use"]="  serve_debug"
-)
 
+module_options+=( 
+    ["serve_debug,feature"]="serve-debug"
+    ["serve_debug,desc"]="Start a simple http server"
+    ["serve_debug,example"]="serve_debug"
+
+    ["consolidate_files,feature"]="consolidate_files"
+    ["consolidate_files,desc"]="build a monolithic file from the module files"
+    ["consolidate_files,example"]="(WIP)"
+
+    ["split_files,feature"]="split_files"
+    ["split_files,desc"]="split the monolithic file to module files"
+    ["split_files,example"]="(WIP)"
+)
 
 #
 # Merge the module options into the global options
@@ -17,7 +25,6 @@ declare -A module_options=(
 for key in "${!module_options[@]}"; do
     options["$key"]="${module_options[$key]}"
 done
-
 
 #
 # Function to serve the edit and debug server

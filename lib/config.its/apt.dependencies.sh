@@ -4,26 +4,20 @@
 #
 # Define the options for this module
 #
-declare -A module_options=( 
-    ["get_dependencies,long"]="get_deps=\"\""
-    ["get_dependencies,disc"]="Install missing dependencies"
-    ["get_dependencies,use"]="  get_dependencies \"arg1 arg2 arg3...\""
+module_options+=(
+["get_dependencies,feature"]="get_dependencies"
+["get_dependencies,desc"]="Install missing dependencies"
+["get_dependencies,example"]="get_dependencies \"arg1 arg2 arg3...\""
 
-    ["remove_dependencies,long"]="rm-deps"
-    ["remove_dependencies,disc"]="Remove installed dependencies"
-    ["remove_dependencies,use"]="  remove_dependencies \"arg1 arg2 arg3...\"" 
+["remove_dependencies,feature"]="rm-deps"
+["remove_dependencies,desc"]="Remove installed dependencies"
+["remove_dependencies,example"]="remove_dependencies \"arg1 arg2 arg3...\"" 
 
-    ["get_current_apt,long"]="see-apt"
-    ["get_current_apt,disc"]="Check if apt, apt-get, or dpkg is currently running, and package list is up-to-date"
-    ["get_current_apt,use"]="  see_current_apt"
+["get_current_apt,id"]="see-apt"
+["get_current_apt,desc"]="Check if apt, apt-get, or dpkg is currently running, and package list is up-to-date"
+["get_current_apt,example"]="see_current_apt"
+
 )
-
-#
-# Merge the module options into the global options
-#
-for key in "${!module_options[@]}"; do
-    options["$key"]="${module_options[$key]}"
-done
 
 
 #
