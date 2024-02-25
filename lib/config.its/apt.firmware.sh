@@ -1,9 +1,10 @@
 #!/bin/bash
 
+
 #
 # Define the options for this module
 #
-declare -A module_options
+
 module_options+=(
 ["see_firmware_hold,feature"]="see_firmware_hold"
 ["see_firmware_hold,desc"]="Check if firmware, kernel, and u-boot are held back from upgrades"
@@ -107,3 +108,4 @@ function toggle_hold_status() {
         fi
     done
 }
+

@@ -1,10 +1,9 @@
 #!/bin/bash
 
-
 #
 # Define the options for this module
 #
-module_options+=(
+module_options+=( 
 ["get_dependencies,feature"]="get_dependencies"
 ["get_dependencies,desc"]="Install missing dependencies"
 ["get_dependencies,example"]="get_dependencies \"arg1 arg2 arg3...\""
@@ -107,3 +106,4 @@ update_packages() {
     apt-get update
     return 0
 }
+

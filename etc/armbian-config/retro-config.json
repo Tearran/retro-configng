@@ -1,8 +1,8 @@
 {
     "menu": [
         {
-            "id": "Tests",
-            "description": "Play ground",
+            "id": "Run Time",
+            "description": "Functions Play ground",
             "show": true,
             "sub": [
                 {
@@ -84,9 +84,17 @@
             "sub": [
                 {
                     "id": "H0",
-                    "description": "Example Uses (WIP)",
+                    "description": "Example Show in file Uses (WIP)",
                     "command": [
                         "see_use | show_message"
+                    ],
+                    "show": true,
+                    "requirements": [""]
+                },                {
+                    "id": "H1",
+                    "description": "Example Uses (WIP)",
+                    "command": [
+                        "parse_json | show_message"
                     ],
                     "show": true,
                     "requirements": [""]

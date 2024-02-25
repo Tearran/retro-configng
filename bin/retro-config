@@ -7,14 +7,21 @@
 
 
 #
-# check for root privileges
+# check for root privileges if not check for non root options
 #
-if [[ $EUID != 0 ]]; then
-	echo "This tool requires root privileges. Try again with \"sudo \" please ..." >&2
-	sleep 2
-	exit 1
+allowed_commands=("--readme" "--help" "--join" "--split")
+
+if [[ $EUID != 0 && ! " ${allowed_commands[@]} " =~ " $1 " ]]; then
+    echo "This tool requires root privileges. Try again with \"sudo \" please ..." >&2
+    sleep 1
+    exit 1
 fi
 
+if [[ $EUID == 0 && " ${allowed_commands[@]} " =~ " $1 " ]]; then
+    echo "This tool requires normal privileges. Try again without sudo ..." >&2
+    sleep 1
+    exit 1
+fi
 
 #
 # load functions, Dynamic directory root
@@ -36,132 +43,91 @@ libpath="$directory/lib"
 [[ -f "/etc/armbian-release" ]] && source /etc/armbian-release
 [[ -f "/etc/os-release" ]] && source /etc/os-release
 
-
-#
 # Define the options for the module    
-#
-declare -A options
+declare -A module_options
 
-
-#
 # Load the module files
-#
 source_modules() {
     local modpath="$1"
     for file in "$modpath"/*.sh
-        do
-            if [[ -f "$file" ]]; then
-                source "$file" 
-                # Merge the module options into the global options  
-                for key in "${!module_options[@]}"; do
-                    options["$key"]="${module_options[$key]}"
-                done
-            fi
-        done 
-
+    do
+        if [[ -f "$file" ]]; then
+            source "$file" 
+        fi
+    done
 } 
-
-
-
-
 
 if [[ -f "$libpath/config.its.sh" ]] ; then
     source "$libpath/config.its.sh"
+elif [[ -d "$libpath/config.split" ]] ; then
+    source_modules "$libpath/config.split"
 else
     source_modules "$libpath/config.its"
 fi
 
 #
-# Set the dialog command to whiptail or dialog
+# SET the TUI
 #
-if command -v whiptail &> /dev/null
-then
-    dialog_cmd="whiptail"
-elif command -v dialog &> /dev/null
-then
-    dialog_cmd="dialog"
-else
-echo -e "Error: Neither 'dialog' nor 'whiptail' is installed.\n  Please install whiptail for best of them and try again."
-exit 1
-fi
+[[ -x "$(command -v whiptail)" ]] && export DIALOG="whiptail"
 
+join_scripts() {
+    local modpath="$1"
+    local output_file="$2"
 
-#
-# Function to parse the JSON data ouput to markdown, for documentation
-#
-function parse_json() {
-    # Read the JSON file into a variable
-    json=$(cat $directory/etc/armbian-config/retro-config.json)
+    # Add a shebang and the declaration of the module_options associative array to the first lines of the output file
+    echo -e "#!/bin/bash\n\tdeclare -A module_options" > "$output_file"
 
-    # Get the length of the 'menu' array
-    length=$(echo "$json" | jq '.menu | length')
+    for file in "$modpath"/*.sh
+    do
+        if [[ -f "$file" ]]; then
+            # Add a marker
+            echo "# Start of $(basename "$file")" >> "$output_file"
 
-    # Iterate over each element in the 'menu' array
-    for ((i=0; i<$length; i++)); do
-        # Extract the 'id' and 'description' of the current menu
-        id=$(echo "$json" | jq -r ".menu[$i].id")
-        description=$(echo "$json" | jq -r ".menu[$i].description")
-
-        echo "Menu ID: $id"
-        echo "Menu Description: $description"
-
-        # Get the length of the 'sub' array of the current menu
-        sub_length=$(echo "$json" | jq ".menu[$i].sub | length")
-
-        # Iterate over each element in the 'sub' array
-        for ((j=0; j<$sub_length; j++)); do
-            # Extract the 'id', 'description', 'command', 'show', 'network', and 'requirements' of the current submenu
-            sub_id=$(echo "$json" | jq -r ".menu[$i].sub[$j].id")
-            sub_description=$(echo "$json" | jq -r ".menu[$i].sub[$j].description")
-            sub_command=$(echo "$json" | jq -r ".menu[$i].sub[$j].command")
-            sub_show=$(echo "$json" | jq -r ".menu[$i].sub[$j].show")
-            sub_network=$(echo "$json" | jq -r ".menu[$i].sub[$j].network")
-            sub_requirements=$(echo "$json" | jq -r ".menu[$i].sub[$j].requirements[]")
-
-            echo "  Submenu ID: $sub_id"
-            echo "  Submenu Description: $sub_description"
-            echo "  Submenu Command: $sub_command"
-            echo "  Submenu Show: $sub_show"
-            echo "  Submenu Network: $sub_network"
-            echo "  Submenu Requirements: $sub_requirements"
-            echo
-        done
-    done
-}
-
-
-#
-# Function to parse the key-pairs to a JSON file (WIP)
-#
-function see_use() {
-    mod_message="Usage: \n"
-    # Iterate over the options
-    for key in "${!options[@]}"; do
-        # Split the key into function_name and type
-        IFS=',' read -r function_name type <<< "$key"
-        # If the type is 'long', append the option to the help message
-        if [[ "$type" == "feature" ]]; then
-            mod_message+="  ${options["$function_name,desc"]}\n"
-            mod_message+="\t${options["$function_name,feature"]} ${options["$function_name,example"]}\n\n"
+            # Remove the shebang from the file and add the contents to the output file
+            sed '/^#!\/bin\/bash/d' "$file" >> "$output_file"
+            
+            # Add a newline
+            echo "" >> "$output_file"
         fi
     done
 
-    echo -e "$mod_message"
+    echo "    for key in \"\${!module_options[@]}\"; do" >> "$output_file"
+    echo "        options[\"\$key\"]=\"\${module_options[\$key]}\"" >> "$output_file"
+    echo "    done" >> "$output_file"
+}
 
- #   parse_json 
+split_script() {
+    local input_file="$1"
+    local output_dir="$2"
+    mkdir -p "$output_dir"
+
+    awk '
+        BEGIN { RS = "\n# Start of"; FS = "\n"; OFS = "\n"; ORS = "\n"; }
+        NR > 1 {
+            sub(/ /, "", $1);
+            output_file = sprintf("%s/%s", "'"$output_dir"'", $1);
+            $1 = "#!/bin/bash";
+            print $0 > output_file;
+        }
+    ' "$input_file"
 }
 
 
 #
 # Show Help mesaage
 #
-[[ $1 == "--use" || $1 == "-u" ]] && see_use | show_message && exit 0;
+[[ $1 == "--help" || $1 == "-u" ]] && see_use && exit 0;
 
+[[ "$1" == "--readme" ]] && see_use > "$bin/../README.md" && echo "README.md has been updated." && exit 0;
+
+[[ "$1" == "--join" ]] && join_scripts  "$libpath/config.its" "$libpath/config.its.sh" && exit 0 ;
+
+[[ "$1" == "--split" ]] && mkdir -p "$libpath/config.split" && split_script "$libpath/config.its.sh" "$libpath/config.split" && exit 0 ;
 
 #
 # Load the TUI
 while true; do
-    clear
+    #clear
     generate_top_menu || exit 1
 done
 

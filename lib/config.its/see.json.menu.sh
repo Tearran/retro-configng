@@ -1,14 +1,14 @@
 #!/bin/bash
 
 
+
 #
-# Declare the module options
+# Define the options for this module
 #
 module_options+=(
 ["set_colors,feature"]="set_colors"
 ["set_colors,desc"]="Set a background color"
 ["set_colors,example"]="(number 0-7)"
-
 ["execute_command,feature"]="execute_command"
 ["execute_command,desc"]="Execute a command from the array"
 ["execute_command,example"]="(WIP)"
@@ -21,10 +21,10 @@ module_options+=(
 function set_colors() {
     local color_code=$1
 
-    if [ "$dialog_cmd" = "whiptail" ]; then
+    if [ "$DIALOG" = "whiptail" ]; then
         set_newt_colors "$color_code"
          #echo "color code: $color_code" | show_infobox ;
-    elif [ "$dialog_cmd" = "dialog" ]; then
+    elif [ "$DIALOG" = "dialog" ]; then
         set_term_colors "$color_code"
     else
         echo "Invalid dialog type"
@@ -114,7 +114,7 @@ function generate_top_menu() {
 
     set_colors 4
 
-    local OPTION=$($dialog_cmd --title "Menu" --menu "Choose an option" 0 80 9 "${menu_options[@]}" 3>&1 1>&2 2>&3)
+    local OPTION=$($DIALOG --title "Menu" --menu "Choose an option" 0 80 9 "${menu_options[@]}" 3>&1 1>&2 2>&3)
     local exitstatus=$?
 
     if [ $exitstatus = 0 ]; then
@@ -141,7 +141,7 @@ function generate_menu() {
     done < <(jq -r --arg parent_id "$parent_id" '.menu[] | .. | objects | select(.id==$parent_id) | .sub[]? | select(.show==true) | "\(.id)\n\(.description)"' "$json_file")
     set_colors 2 # "$?"
 
-    local OPTION=$($dialog_cmd --title "Menu" --menu "Choose an option" 0 80 9 "${submenu_options[@]}" \
+    local OPTION=$($DIALOG --title "Menu" --menu "Choose an option" 0 80 9 "${submenu_options[@]}" \
                             --ok-button Select --cancel-button Back 3>&1 1>&2 2>&3)
 
     local exitstatus=$?
@@ -168,10 +168,39 @@ function generate_menu() {
 #
 # Function to execute the command
 #
-function execute_command() {
+function execute_command_alpha() {
     local id=$1
     local commands=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .command[]' "$json_file")
     for command in "${commands[@]}"; do
         eval "$command"
+    done
+}
+
+
+#
+# Function to generate the list of restricted commands
+#
+function generate_restricted_commands() {
+    local restricted_commands=("rm -r" "dd" "fdisk" "mkfs" ":(){ :|:& };:")
+    echo "${restricted_commands[@]}"
+}
+
+#
+# Function to execute the command
+#
+function execute_command() {
+    local id=$1
+    local commands=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .command[]' "$json_file")
+
+    # Get the list of restricted commands
+    local restricted_commands=($(generate_restricted_commands))
+
+    for command in "${commands[@]}"; do
+        # Check if the command is not in the list of restricted commands
+        if [[ ! " ${restricted_commands[@]} " =~ " ${command} " ]]; then
+            eval "$command"
+        else
+            echo "Command not allowed: $command"
+        fi
     done
 }

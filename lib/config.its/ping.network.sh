@@ -1,7 +1,8 @@
 #!/bin/bash
 
+
 #
-# Declare the module options
+# Define the options for this module
 #
 module_options+=(
 ["see_ping,feature"]="see_ping"
@@ -33,3 +34,4 @@ function see_ping() {
 		Press CTRL C to stop or any key to ignore and continue."
 	fi
 }
+

@@ -2,12 +2,9 @@
 
 
 #
-# Check if whiptail is installed
 #
-[[ -x "$(command -v dialog)" ]] && export DIALOG="dialog"
-[[ -x "$(command -v whiptail)" ]] && export DIALOG="whiptail"
-
-
+# Define the options for this module
+#
 module_options+=(
 ["get_input,feature"]="get_input"
 ["get_input,desc"]="TODO:DESC"
@@ -201,3 +198,4 @@ process_input() {
         echo "You entered: $input"
    fi
 }
+
