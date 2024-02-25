@@ -551,8 +551,8 @@ function parse_json() {
         id=$(echo "$json" | jq -r ".menu[$i].id")
         description=$(echo "$json" | jq -r ".menu[$i].description")
 
-        echo "Menu ID: $id"
-        echo "Menu Description: $description"
+        echo "# Menu ID: $id"
+        echo "## Menu Description: $description"
 
         # Get the length of the 'sub' array of the current menu
         sub_length=$(echo "$json" | jq ".menu[$i].sub | length")
@@ -567,12 +567,14 @@ function parse_json() {
             sub_network=$(echo "$json" | jq -r ".menu[$i].sub[$j].network")
             sub_requirements=$(echo "$json" | jq -r ".menu[$i].sub[$j].requirements[]")
 
-            echo "  Submenu ID: $sub_id"
-            echo "  Submenu Description: $sub_description"
-            echo "  Submenu Command: $sub_command"
-            echo "  Submenu Show: $sub_show"
-            echo "  Submenu Network: $sub_network"
-            echo "  Submenu Requirements: $sub_requirements"
+            echo "- Submenu ID: $sub_id"
+            echo "- Submenu Description: $sub_description"
+            echo "- Submenu Command: "
+            echo "         $sub_command"
+
+            echo "Submenu Show: $sub_show"
+            echo "Submenu Network: $sub_network"
+            echo "Submenu Requirements: $sub_requirements "
             echo
         done
     done
