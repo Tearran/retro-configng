@@ -118,7 +118,7 @@ split_script() {
 #
 [[ $1 == "--help" || $1 == "-u" ]] && see_use && exit 0;
 
-[[ "$1" == "--readme" ]] && see_use > "$bin/../README.md" && echo "README.md has been updated." && exit 0;
+[[ "$1" == "--readme" ]] && see_use > "$bin/../README.md" && parse_json >> "$bin/../README.md" echo "README.md has been updated." && exit 0;
 
 [[ "$1" == "--join" ]] && join_scripts  "$libpath/config.its" "$libpath/config.its.sh" && exit 0 ;
 
