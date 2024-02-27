@@ -7,7 +7,7 @@
 #
 module_options+=(
 ["parse_json,feature"]="parse_json"
-["parse_json,desc"]="Show readble json"
+["parse_json,desc"]="Show json opjects" 
 ["parse_json,example"]="parse_json"
 
 ["see_use,feature"]="see_use"
@@ -104,4 +104,5 @@ function see_use_readme() {
 
     echo -e "$mod_message"
 }
+
 

@@ -58,7 +58,7 @@ function edit_file() {
 
 #
 # build a monolithic file from the module files
-#
+# The alpha testing version
 consolidate_files_alpha() {
     local modpath="$1"
     local output_file="$2"
@@ -77,7 +77,7 @@ consolidate_files_alpha() {
         fi
     done
 } 
-#consolidate_files "$libpath/config.its" "$libpath/config.its.sh" 
+
 
 consolidate_files() {
     local modpath="$1"
@@ -102,7 +102,9 @@ consolidate_files() {
             echo "" >> "$output_file"
         fi
     done
-}
+} 
+
+#consolidate_files "$libpath/config.its" "$libpath/config.its.sh" 
 
 
 #
@@ -131,15 +133,16 @@ split_files() {
 }
 
 #mkdir -p "$libpath/config.split"
-#split_files "$libpath/config.its.sh" "$libpath/config.split" ; exit 1
+#split_files "$libpath/config.its.sh" "$libpath/config.split"
 
 
-    for key in "${!module_options[@]}"; do
-        options["$key"]="${module_options[$key]}"
-    done
+#
+# Add the module options to the options array
+# This is done last so that the module's functions are not added to the options array
+# Join and split may produce multibel of the for loop here. 
+#
+for key in "${!module_options[@]}"; do
+    options["$key"]="${module_options[$key]}"
+done
 
-
-    for key in "${!module_options[@]}"; do
-        options["$key"]="${module_options[$key]}"
-    done
 

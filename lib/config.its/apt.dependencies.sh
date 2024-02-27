@@ -8,13 +8,13 @@ module_options+=(
 ["get_dependencies,desc"]="Install missing dependencies"
 ["get_dependencies,example"]="get_dependencies \"arg1 arg2 arg3...\""
 
-["remove_dependencies,feature"]="rm-deps"
+["remove_dependencies,feature"]="remove_dependencies"
 ["remove_dependencies,desc"]="Remove installed dependencies"
 ["remove_dependencies,example"]="remove_dependencies \"arg1 arg2 arg3...\"" 
 
-["get_current_apt,id"]="see-apt"
+["get_current_apt,id"]="get_current_apt"
 ["get_current_apt,desc"]="Check if apt, apt-get, or dpkg is currently running, and package list is up-to-date"
-["get_current_apt,example"]="see_current_apt"
+["get_current_apt,example"]="get_current_apt"
 
 )
 
@@ -106,7 +106,3 @@ update_packages() {
     apt-get update
     return 0
 }
-
-
-
-

@@ -6,8 +6,8 @@
 #
 module_options+=(
 ["see_ping,feature"]="see_ping"
-["see_ping,desc"]="Check for internet connection"
-["see_ping,example"]=""
+["see_ping,desc"]="Check for internet connection warn if none"
+["see_ping,example"]="see_ping"
 )
 
 
@@ -34,6 +34,7 @@ function see_ping() {
 		Press CTRL C to stop or any key to ignore and continue."
 	fi
 }
+
 
 
 

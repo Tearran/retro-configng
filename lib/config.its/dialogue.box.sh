@@ -7,36 +7,36 @@
 #
 module_options+=(
 ["get_input,feature"]="get_input"
-["get_input,desc"]="TODO:DESC"
-["get_input,example"]="TODO:Example"
+["get_input,desc"]="TODO"
+["get_input,example"]="get_input"
 
 ["show_menu,feature"]="show_menu"
 ["show_menu,desc"]="Check for internet connection"
-["show_menu,example"]="TODO:Example"
+["show_menu,example"]="show_menu"
 
 ["show_message,feature"]="show_message"
 ["show_message,desc"]="Check for internet connection"
-["show_message,example"]="TODO:Example"
+["show_message,example"]="echo \"message\" | show_message "
 
 ["show_infobox,feature"]="show_infobox"
 ["show_infobox,desc"]="Show info box"
-["show_infobox,example"]="TODO:Example"
+["show_infobox,example"]=" TODO"
 
 ["set_user_input,feature"]="set_user_input"
-["set_user_input,desc"]="Display a input dialog"
-["set_user_input,example"]="set_user_input"
+["set_user_input,desc"]="Display a input dialog use with get_user_input"
+["set_user_input,example"]=" set_user_input | get_input"
 
 ["get_user_input,feature"]="get_user_input"
 ["get_user_input,desc"]="Display set_user_input results"
-["get_user_input,example"]="get_user_input"
+["get_user_input,example"]=" set_user_input | get_user_input"
 
 ["get_user_continue,feature"]="get_user_continue"
 ["get_user_continue,desc"]="Display a Yes/No dialog box (WIP)"
-["get_user_continue,example"]="get_user_continue"
+["get_user_continue,example"]="TODO:Desc"
 
 ["process_input,feature"]="process_input"
 ["process_input,desc"]="TODO:Desc"
-["process_input,example"]="process_input"
+["process_input,example"]="TODO:Desc"
 )
 
 
@@ -195,6 +195,7 @@ process_input() {
         echo "You entered: $input"
    fi
 }
+
 
 
 

@@ -2,36 +2,42 @@
 
 
 #
-# This script provides a Dialog box interface for managing Armbian configuration.
+# This script provides a Whiptail dialog box interface for managing Armbian configuration.
 #
 
 
 #
 # The allowed commads to be run without root privileges not allowed with root privileges
 declare -A user_commands
-user_commands=( 
-    ["--readme"]="Description for readme"
-     ["--help"]="Description for help" 
-     ["--join"]="Description for join" 
-     ["--split"]="Description for split" 
-     ["--example"]="Description for example" 
-     ["--feature"]="Description for feature" 
-     )
+user_commands=(
+    ["--help"]="Show this help message"
+    ["--readme"]="Update the Features table"
+    ["--join"]="Merge the module files into one file"
+    ["--split"]="Split the module file into multiple files"
+    ["--json"]="Show json like format of the features"
+    )
 
-#
-# check user_commands for non root options exit if root
-#
+function generate_json() {
+    local -n arr=$1
+    json="{"
+    for key in "${!arr[@]}"; do
+        json+="\"$key\": \"${arr[$key]}\","
+    done
+    json=${json%,}
+    json+="}"
+
+    echo "$json" | jq . > commands.json
+}
+
+
 if [[ $EUID != 0 && -z "${user_commands[$1]}" ]]; then
     echo "This requires root privileges. Try again with \"sudo \" please ..." >&2
     sleep 1
     exit 1
 fi
 
-
-#
-# check for root privileges exit if non root options passed
-#
 if [[ $EUID == 0 && -n "${user_commands[$1]}" ]]; then
+    # This command is not allowed with root privileges
     echo "This Option requires normal privileges. Try again without sudo ..." >&2
     sleep 1
     exit 1
@@ -93,6 +99,36 @@ else
     source_modules "$libpath/config.its"
 fi
 
+#
+# ouput a json-like format
+#
+generate_json() {
+features=()
+for key in "${!module_options[@]}"; do
+    if [[ $key == *",feature" ]]; then
+        features+=("${module_options[$key]}")
+    fi
+done
+
+echo "["
+for index in "${!features[@]}"; do
+    feature=${features[$index]}
+    desc_key="${feature},desc"
+    example_key="${feature},example"
+    desc="${module_options[$desc_key]}"
+    example="${module_options[$example_key]}"
+    echo "  {"
+    echo "    \"feature\": \"$feature\","
+    echo "    \"description\": \"$desc\","
+    echo "    \"example\": \"$example\""
+    if [ $index -ne $(( ${#features[@]}-1 )) ]; then
+        echo "  },"
+    else
+        echo "  }"
+    fi
+done
+echo "]"
+}
 
 #
 # SET the TUI
@@ -156,7 +192,7 @@ split_script() {
 generate_readme() {
     echo "Updating README.md."
     # Get the current date
-    current_date=$(date)    
+    local current_date=$(date)    
 
     cat << EOF > "$bin/../README.md"    
 # Experiment: JSON Dialogue Box
@@ -168,7 +204,8 @@ When the application starts, it generates a top-level menu from the JSON file. T
 
 Updated on $current_date.
 
-$(generate_feature)
+# FEATURES: Table of Contents
+$(see_use_readme)
 
 
 EOF
@@ -177,59 +214,31 @@ EOF
 
 }
 
-#
-# Function to generate the EXAMPLES.md file
-#
-generate_example() {
-    echo "Updating EXAMPLES.md."
-    # Get the current date
-    current_date=$(date)    
-
-    cat << EOF > "$bin/../EXAMPLES.md"
-# Example: JSON Dialogue Box
-This application is a command-line interface that interacts with a JSON file to perform various operations. It is open-source and licensed under the GPL.
-
-$(parse_json)
-
-EOF
-    
-        # Print a message indicating that README.md has been updated
-        echo "EXAMPLES.md has been updated."
-    }
-
 
 #
-# Function to generate the FEATURES.md file
-#
-generate_feature() {
-    # Get the current date
-    current_date=$(date)    
+# Show the help message for this script
+see_use_help() {
 
-    cat << EOF 
-# FEATURES: Table of Contents
-$(see_use_readme)
+    echo "Available commands:"
+    for key in "${!user_commands[@]}"; do
+        printf "%-10s -\t%s\n" "$key" "${user_commands[$key]}"
+    done
 
-EOF
-    }
+}
 
 
 #
 # Show Help mesaage
 #
-[[ $1 == "--help" || $1 == "-h" ]] && see_use && exit 0;
+[[ $1 == "--help" || $1 == "-h" ]] && see_use_help && exit 0;
 #
 # Generate the EXAMPLES.md file from json
 #
-[[ $1 == "example" ]] && generate_example && exit 0;
-#
-# Generate the FEATURES.md file from array from the modules
-#
-[[ $1 == "feature" ]] && generate_feature && exit 0;
+[[ $1 == "--json" ]] && generate_json && exit 0;
 #
 # Generate the README.md file
 #
 [[ "$1" == "--readme" ]] && generate_readme && exit 0;
-
 #
 # Join split the script modules into one file use --join folder/to/join file/to/join.sh
 #

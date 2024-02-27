@@ -9,10 +9,28 @@ module_options+=(
 ["set_colors,feature"]="set_colors"
 ["set_colors,desc"]="Set a background color"
 ["set_colors,example"]="(number 0-7)"
+    
+["reset_colors,feature"]="reset_colors"
+["reset_colors,desc"]="Reset the background color"
+["reset_colors,example"]="reset_colors"
+
+["generate_top_menu,feature"]="generate_top_menu"
+["generate_top_menu,desc"]="Generate the top menu"
+["generate_top_menu,example"]="generate_top_menu"
+
+["generate_menu,feature"]="generate_menu"
+["generate_menu,desc"]="Generate the submenu"
+["generate_menu,example"]="generate_menu"
+
 ["execute_command,feature"]="execute_command"
-["execute_command,desc"]="Execute a command from the array"
-["execute_command,example"]="(WIP)"
+["execute_command,desc"]="Execute a command"
+["execute_command,example"]="execute_command"
+
+["generate_restricted_commands","feature"]="generate_restricted_commands"
+["generate_restricted_commands","desc"]="List of restricted commands for execute_command"
+["generate_restricted_commands","example"]="generate_restricted_commands"
 )
+
 
 
 #
@@ -166,18 +184,6 @@ function generate_menu() {
 
 
 #
-# Function to execute the command
-#
-function execute_command_alpha() {
-    local id=$1
-    local commands=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .command[]' "$json_file")
-    for command in "${commands[@]}"; do
-        eval "$command"
-    done
-}
-
-
-#
 # Function to generate the list of restricted commands
 #
 function generate_restricted_commands() {
@@ -205,6 +211,7 @@ function execute_command() {
         fi
     done
 }
+
 
 
 

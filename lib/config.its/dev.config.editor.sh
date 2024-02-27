@@ -10,7 +10,7 @@
 
 module_options+=( 
     ["serve_debug,feature"]="serve-debug"
-    ["serve_debug,desc"]="Start a simple http server"
+    ["serve_debug,desc"]="Start a simple http server to view readme.md and other files in the browser"
     ["serve_debug,example"]="serve_debug"
 )
 
@@ -46,10 +46,3 @@ function serve_debug() {
         exit 0
     fi
 }
-
-
-
-
-
-
-

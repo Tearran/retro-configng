@@ -8,15 +8,15 @@
 module_options+=(
 ["see_firmware_hold,feature"]="see_firmware_hold"
 ["see_firmware_hold,desc"]="Check if firmware, kernel, and u-boot are held back from upgrades"
-["see_firmware_hold,example"]="TODO:Example"
+["see_firmware_hold,example"]="see_firmware_hold"
 
 ["unhold_packages,feature"]="unhold_packages"
 ["unhold_packages,desc"]="Unhold firmware, kernel, and u-boot from upgrades"
-["unhold_packages,example"]="TODO:Example"
+["unhold_packages,example"]="unhold_packages"
 
 ["hold_packages,feature"]="hold_packages"
 ["hold_packages,desc"]="Hold firmware, kernel, and u-boot from upgrades"
-["hold_packages,example"]="TODO:Example"
+["hold_packages,example"]="hold_packages"
 )
 
 
@@ -101,6 +101,7 @@ function toggle_hold_status() {
         fi
     done
 }
+
 
 
 

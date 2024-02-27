@@ -10,13 +10,13 @@ module_options+=(
 ["get_dependencies,desc"]="Install missing dependencies"
 ["get_dependencies,example"]="get_dependencies \"arg1 arg2 arg3...\""
 
-["remove_dependencies,feature"]="rm-deps"
+["remove_dependencies,feature"]="remove_dependencies"
 ["remove_dependencies,desc"]="Remove installed dependencies"
 ["remove_dependencies,example"]="remove_dependencies \"arg1 arg2 arg3...\"" 
 
-["get_current_apt,id"]="see-apt"
+["get_current_apt,id"]="get_current_apt"
 ["get_current_apt,desc"]="Check if apt, apt-get, or dpkg is currently running, and package list is up-to-date"
-["get_current_apt,example"]="see_current_apt"
+["get_current_apt,example"]="get_current_apt"
 
 )
 
@@ -109,10 +109,6 @@ update_packages() {
     return 0
 }
 
-
-
-
-
 # Start of apt.firmware.sh
 
 
@@ -123,15 +119,15 @@ update_packages() {
 module_options+=(
 ["see_firmware_hold,feature"]="see_firmware_hold"
 ["see_firmware_hold,desc"]="Check if firmware, kernel, and u-boot are held back from upgrades"
-["see_firmware_hold,example"]="TODO:Example"
+["see_firmware_hold,example"]="see_firmware_hold"
 
 ["unhold_packages,feature"]="unhold_packages"
 ["unhold_packages,desc"]="Unhold firmware, kernel, and u-boot from upgrades"
-["unhold_packages,example"]="TODO:Example"
+["unhold_packages,example"]="unhold_packages"
 
 ["hold_packages,feature"]="hold_packages"
 ["hold_packages,desc"]="Hold firmware, kernel, and u-boot from upgrades"
-["hold_packages,example"]="TODO:Example"
+["hold_packages,example"]="hold_packages"
 )
 
 
@@ -221,6 +217,7 @@ function toggle_hold_status() {
 
 
 
+
 # Start of dev.config.editor.sh
 
 
@@ -233,7 +230,7 @@ function toggle_hold_status() {
 
 module_options+=( 
     ["serve_debug,feature"]="serve-debug"
-    ["serve_debug,desc"]="Start a simple http server"
+    ["serve_debug,desc"]="Start a simple http server to view readme.md and other files in the browser"
     ["serve_debug,example"]="serve_debug"
 )
 
@@ -270,13 +267,6 @@ function serve_debug() {
     fi
 }
 
-
-
-
-
-
-
-
 # Start of dialogue.box.sh
 
 
@@ -286,36 +276,36 @@ function serve_debug() {
 #
 module_options+=(
 ["get_input,feature"]="get_input"
-["get_input,desc"]="TODO:DESC"
-["get_input,example"]="TODO:Example"
+["get_input,desc"]="TODO"
+["get_input,example"]="get_input"
 
 ["show_menu,feature"]="show_menu"
 ["show_menu,desc"]="Check for internet connection"
-["show_menu,example"]="TODO:Example"
+["show_menu,example"]="show_menu"
 
 ["show_message,feature"]="show_message"
 ["show_message,desc"]="Check for internet connection"
-["show_message,example"]="TODO:Example"
+["show_message,example"]="echo \"message\" | show_message "
 
 ["show_infobox,feature"]="show_infobox"
 ["show_infobox,desc"]="Show info box"
-["show_infobox,example"]="TODO:Example"
+["show_infobox,example"]=" TODO"
 
 ["set_user_input,feature"]="set_user_input"
-["set_user_input,desc"]="Display a input dialog"
-["set_user_input,example"]="set_user_input"
+["set_user_input,desc"]="Display a input dialog use with get_user_input"
+["set_user_input,example"]=" set_user_input | get_input"
 
 ["get_user_input,feature"]="get_user_input"
 ["get_user_input,desc"]="Display set_user_input results"
-["get_user_input,example"]="get_user_input"
+["get_user_input,example"]=" set_user_input | get_user_input"
 
 ["get_user_continue,feature"]="get_user_continue"
 ["get_user_continue,desc"]="Display a Yes/No dialog box (WIP)"
-["get_user_continue,example"]="get_user_continue"
+["get_user_continue,example"]="TODO:Desc"
 
 ["process_input,feature"]="process_input"
 ["process_input,desc"]="TODO:Desc"
-["process_input,example"]="process_input"
+["process_input,example"]="TODO:Desc"
 )
 
 
@@ -479,6 +469,7 @@ process_input() {
 
 
 
+
 # Start of ping.network.sh
 
 
@@ -487,8 +478,8 @@ process_input() {
 #
 module_options+=(
 ["see_ping,feature"]="see_ping"
-["see_ping,desc"]="Check for internet connection"
-["see_ping,example"]=""
+["see_ping,desc"]="Check for internet connection warn if none"
+["see_ping,example"]="see_ping"
 )
 
 
@@ -520,6 +511,7 @@ function see_ping() {
 
 
 
+
 # Start of see.help.messgaes.sh
 
 
@@ -529,7 +521,7 @@ function see_ping() {
 #
 module_options+=(
 ["parse_json,feature"]="parse_json"
-["parse_json,desc"]="Show readble json"
+["parse_json,desc"]="Show json opjects" 
 ["parse_json,example"]="parse_json"
 
 ["see_use,feature"]="see_use"
@@ -628,6 +620,7 @@ function see_use_readme() {
 }
 
 
+
 # Start of see.json.menu.sh
 
 
@@ -639,10 +632,28 @@ module_options+=(
 ["set_colors,feature"]="set_colors"
 ["set_colors,desc"]="Set a background color"
 ["set_colors,example"]="(number 0-7)"
+    
+["reset_colors,feature"]="reset_colors"
+["reset_colors,desc"]="Reset the background color"
+["reset_colors,example"]="reset_colors"
+
+["generate_top_menu,feature"]="generate_top_menu"
+["generate_top_menu,desc"]="Generate the top menu"
+["generate_top_menu,example"]="generate_top_menu"
+
+["generate_menu,feature"]="generate_menu"
+["generate_menu,desc"]="Generate the submenu"
+["generate_menu,example"]="generate_menu"
+
 ["execute_command,feature"]="execute_command"
-["execute_command,desc"]="Execute a command from the array"
-["execute_command,example"]="(WIP)"
+["execute_command,desc"]="Execute a command"
+["execute_command,example"]="execute_command"
+
+["generate_restricted_commands","feature"]="generate_restricted_commands"
+["generate_restricted_commands","desc"]="List of restricted commands for execute_command"
+["generate_restricted_commands","example"]="generate_restricted_commands"
 )
+
 
 
 #
@@ -796,18 +807,6 @@ function generate_menu() {
 
 
 #
-# Function to execute the command
-#
-function execute_command_alpha() {
-    local id=$1
-    local commands=$(jq -r --arg id "$id" '.menu[] | .. | objects | select(.id==$id) | .command[]' "$json_file")
-    for command in "${commands[@]}"; do
-        eval "$command"
-    done
-}
-
-
-#
 # Function to generate the list of restricted commands
 #
 function generate_restricted_commands() {
@@ -835,6 +834,7 @@ function execute_command() {
         fi
     done
 }
+
 
 
 
@@ -899,7 +899,7 @@ function edit_file() {
 
 #
 # build a monolithic file from the module files
-#
+# The alpha testing version
 consolidate_files_alpha() {
     local modpath="$1"
     local output_file="$2"
@@ -918,7 +918,7 @@ consolidate_files_alpha() {
         fi
     done
 } 
-#consolidate_files "$libpath/config.its" "$libpath/config.its.sh" 
+
 
 consolidate_files() {
     local modpath="$1"
@@ -943,7 +943,9 @@ consolidate_files() {
             echo "" >> "$output_file"
         fi
     done
-}
+} 
+
+#consolidate_files "$libpath/config.its" "$libpath/config.its.sh" 
 
 
 #
@@ -972,13 +974,17 @@ split_files() {
 }
 
 #mkdir -p "$libpath/config.split"
-#split_files "$libpath/config.its.sh" "$libpath/config.split" ; exit 1
+#split_files "$libpath/config.its.sh" "$libpath/config.split"
 
 
-    for key in "${!module_options[@]}"; do
-        options["$key"]="${module_options[$key]}"
-    done
-
+#
+# Add the module options to the options array
+# This is done last so that the module's functions are not added to the options array
+# Join and split may produce multibel of the for loop here. 
+#
+for key in "${!module_options[@]}"; do
+    options["$key"]="${module_options[$key]}"
+done
 
     for key in "${!module_options[@]}"; do
         options["$key"]="${module_options[$key]}"
