@@ -84,7 +84,7 @@
             "sub": [
                 {
                     "id": "H0",
-                    "description": "Example Show in file Uses (WIP)",
+                    "description": "Show in file Use, Bash associative arrays (WIP)",
                     "command": [
                         "see_use | show_message"
                     ],
@@ -92,9 +92,17 @@
                     "requirements": [""]
                 },                {
                     "id": "H1",
-                    "description": "Example Uses (WIP)",
+                    "description": "Show in file Use, JSON Objects (WIP)",
                     "command": [
                         "parse_json | show_message"
+                    ],
+                    "show": true,
+                    "requirements": [""]
+                },{
+                    "id": "H2",
+                    "description": "Help message, Coming soon(WIP)",
+                    "command": [
+                        "echo \"--help message coming soon\" | show_message "
                     ],
                     "show": true,
                     "requirements": [""]

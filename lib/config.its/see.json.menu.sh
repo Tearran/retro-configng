@@ -185,6 +185,7 @@ function generate_restricted_commands() {
     echo "${restricted_commands[@]}"
 }
 
+
 #
 # Function to execute the command
 #
@@ -204,3 +205,6 @@ function execute_command() {
         fi
     done
 }
+
+
+

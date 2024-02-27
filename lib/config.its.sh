@@ -110,6 +110,9 @@ update_packages() {
 }
 
 
+
+
+
 # Start of apt.firmware.sh
 
 
@@ -130,13 +133,6 @@ module_options+=(
 ["hold_packages,desc"]="Hold firmware, kernel, and u-boot from upgrades"
 ["hold_packages,example"]="TODO:Example"
 )
-
-#
-# Merge the module options into the global options
-#
-for key in "${!module_options[@]}"; do
-    options["$key"]="${module_options[$key]}"
-done
 
 
 #
@@ -222,6 +218,9 @@ function toggle_hold_status() {
 }
 
 
+
+
+
 # Start of dev.config.editor.sh
 
 
@@ -270,6 +269,9 @@ function serve_debug() {
         exit 0
     fi
 }
+
+
+
 
 
 
@@ -440,8 +442,7 @@ get_user_input() {
         echo "You cancelled."
     fi
 }
-# usage:
-# get_user_input "Please enter your input: " process_input "Please enter your input: "
+
 
 
 
@@ -459,8 +460,6 @@ get_user_continue() {
     fi
 }
 
-# Usage
-#get_user_continue process_input
 
 
 #
@@ -475,6 +474,9 @@ process_input() {
         echo "You entered: $input"
    fi
 }
+
+
+
 
 
 # Start of ping.network.sh
@@ -515,6 +517,9 @@ function see_ping() {
 }
 
 
+
+
+
 # Start of see.help.messgaes.sh
 
 
@@ -522,8 +527,6 @@ function see_ping() {
 #
 # Define the options for this module
 #
-
-
 module_options+=(
 ["parse_json,feature"]="parse_json"
 ["parse_json,desc"]="Show readble json"
@@ -534,6 +537,7 @@ module_options+=(
 ["see_use,example"]="see_use"
 
 )
+
 
 #
 # Function to parse the JSON data ouput to markdown, for documentation
@@ -551,34 +555,42 @@ function parse_json() {
         id=$(echo "$json" | jq -r ".menu[$i].id")
         description=$(echo "$json" | jq -r ".menu[$i].description")
 
-        echo "# Menu ID: $id"
-        echo "## Menu Description: $description"
+        echo "Menu ID: $id"
+        echo "Menu Description: $description"
 
         # Get the length of the 'sub' array of the current menu
         sub_length=$(echo "$json" | jq ".menu[$i].sub | length")
 
         # Iterate over each element in the 'sub' array
         for ((j=0; j<$sub_length; j++)); do
-            # Extract the 'id', 'description', 'command', 'show', 'network', and 'requirements' of the current submenu
+            # Extract the 'id', 'description', 'show', 'network', and 'requirements' of the current submenu
             sub_id=$(echo "$json" | jq -r ".menu[$i].sub[$j].id")
             sub_description=$(echo "$json" | jq -r ".menu[$i].sub[$j].description")
-            sub_command=$(echo "$json" | jq -r ".menu[$i].sub[$j].command")
             sub_show=$(echo "$json" | jq -r ".menu[$i].sub[$j].show")
             sub_network=$(echo "$json" | jq -r ".menu[$i].sub[$j].network")
             sub_requirements=$(echo "$json" | jq -r ".menu[$i].sub[$j].requirements[]")
 
-            echo "- Submenu ID: $sub_id"
-            echo "- Submenu Description: $sub_description"
-            echo "- Submenu Command: "
-            echo "         $sub_command"
+            # Get the length of the 'command' array of the current submenu
+            command_length=$(echo "$json" | jq ".menu[$i].sub[$j].command | length")
 
-            echo "Submenu Show: $sub_show"
-            echo "Submenu Network: $sub_network"
-            echo "Submenu Requirements: $sub_requirements "
+            # Iterate over each element in the 'command' array
+            for ((k=0; k<$command_length; k++)); do
+                # Extract the 'command' of the current submenu
+                sub_command=$(echo "$json" | jq -r ".menu[$i].sub[$j].command[$k]")
+                echo "  Submenu Command: $sub_command"
+            done
+
+            echo "  Submenu ID: $sub_id"
+            echo "  Submenu Description: $sub_description"
+            echo "  Submenu Show: $sub_show"
+            echo "  Submenu Network: $sub_network"
+            echo "  Submenu Requirements: $sub_requirements"
             echo
         done
     done
 }
+
+
 
 
 #
@@ -599,6 +611,22 @@ function see_use() {
 
     echo -e "$mod_message"
 }
+
+function see_use_readme() {
+    mod_message="| Feature | Description | Example |\n| --- | --- | --- |\n"
+    # Iterate over the options
+    for key in "${!module_options[@]}"; do
+        # Split the key into function_name and type
+        IFS=',' read -r function_name type <<< "$key"
+        # If the type is 'feature', append the option to the help message
+        if [[ "$type" == "feature" ]]; then
+            mod_message+="| ${module_options["$function_name,feature"]} | ${module_options["$function_name,desc"]} | ${module_options["$function_name,example"]} | TODO:|\n"
+        fi
+    done
+
+    echo -e "$mod_message"
+}
+
 
 # Start of see.json.menu.sh
 
@@ -787,6 +815,7 @@ function generate_restricted_commands() {
     echo "${restricted_commands[@]}"
 }
 
+
 #
 # Function to execute the command
 #
@@ -806,6 +835,9 @@ function execute_command() {
         fi
     done
 }
+
+
+
 
 # Start of set.file.sh
 
@@ -828,10 +860,6 @@ module_options+=(
 ["split_files,example"]="split_files \"path/to/file.sh\" \"path/to/folder\""
 )
 
-# Merge the module options into the global options
-for key in "${!module_options[@]}"; do
-    options["$key"]="${module_options[$key]}"
-done
 
 #
 # Function to edit a file
@@ -915,7 +943,9 @@ consolidate_files() {
             echo "" >> "$output_file"
         fi
     done
-} 
+}
+
+
 #
 # split the monolithic file to module files
 #
@@ -943,6 +973,11 @@ split_files() {
 
 #mkdir -p "$libpath/config.split"
 #split_files "$libpath/config.its.sh" "$libpath/config.split" ; exit 1
+
+
+    for key in "${!module_options[@]}"; do
+        options["$key"]="${module_options[$key]}"
+    done
 
 
     for key in "${!module_options[@]}"; do

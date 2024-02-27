@@ -163,8 +163,7 @@ get_user_input() {
         echo "You cancelled."
     fi
 }
-# usage:
-# get_user_input "Please enter your input: " process_input "Please enter your input: "
+
 
 
 
@@ -182,8 +181,6 @@ get_user_continue() {
     fi
 }
 
-# Usage
-#get_user_continue process_input
 
 
 #
@@ -198,4 +195,7 @@ process_input() {
         echo "You entered: $input"
    fi
 }
+
+
+
 

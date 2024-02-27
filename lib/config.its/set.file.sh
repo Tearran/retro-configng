@@ -19,10 +19,6 @@ module_options+=(
 ["split_files,example"]="split_files \"path/to/file.sh\" \"path/to/folder\""
 )
 
-# Merge the module options into the global options
-for key in "${!module_options[@]}"; do
-    options["$key"]="${module_options[$key]}"
-done
 
 #
 # Function to edit a file
@@ -106,7 +102,9 @@ consolidate_files() {
             echo "" >> "$output_file"
         fi
     done
-} 
+}
+
+
 #
 # split the monolithic file to module files
 #
@@ -134,6 +132,11 @@ split_files() {
 
 #mkdir -p "$libpath/config.split"
 #split_files "$libpath/config.its.sh" "$libpath/config.split" ; exit 1
+
+
+    for key in "${!module_options[@]}"; do
+        options["$key"]="${module_options[$key]}"
+    done
 
 
     for key in "${!module_options[@]}"; do

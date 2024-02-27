@@ -1,104 +1,36 @@
-# Menu ID: Run Time
-## Menu Description: Functions Play ground
-- Submenu ID: T0
-- Submenu Description: Check Colors (testing)
-- Submenu Command: 
-         [
-  "get_user_continue \"This will iterate 8 colors \nDo you want to continue?\" process_input",
-  "for i in {0..7}; do set_colors $i && echo Color code $i | show_infobox; done;",
-  "clear && set_colors 0",
-  " echo 'Colors 0-7 test complete' | show_message ;"
-]
-Submenu Show: true
-Submenu Network: null
-Submenu Requirements:  
+# Experiment: JSON Dialogue Box
+This application is a command-line interface that interacts with a JSON file to perform various operations. It is open-source and licensed under the GPL.
 
-- Submenu ID: T1
-- Submenu Description: Software apt repository updtate
-- Submenu Command: 
-         [
-  "get_user_continue \"This will check when apt was updated and if ts running \nDo you want to continue?\" process_input",
-  "see_current_apt | show_message ; "
-]
-Submenu Show: true
-Submenu Network: null
-Submenu Requirements:  
+The application reads a JSON file which contains a menu of commands. Each command in the menu has an associated ID and command string.
 
-- Submenu ID: T2
-- Submenu Description: See ping, see apt, & see firmware  (testing)
-- Submenu Command: 
-         [
-  "get_user_continue \"$( see_ping ) \n Continue?\" process_input",
-  "get_user_continue \"$( see_current_apt ) \nContinue?\" process_input",
-  "get_user_continue \"$( see_firmware_hold ) \nContinue?\" process_input"
-]
-Submenu Show: true
-Submenu Network: null
-Submenu Requirements:  
+When the application starts, it generates a top-level menu from the JSON file. The user can select a command from the menu by entering the associated ID. If the user selects a command, the application executes the command.
 
-- Submenu ID: T3
-- Submenu Description: Pipe armbianmonitor -m to show_infobox
-- Submenu Command: 
-         [
-  "armbianmonitor -m | show_infobox"
-]
-Submenu Show: true
-Submenu Network: null
-Submenu Requirements:  
+Updated on Mon Feb 26 11:31:15 AM MST 2024.
 
-# Menu ID: Network
-## Menu Description: Wireless, Ethernet, and Network settings
-- Submenu ID: N0
-- Submenu Description: Manage wifi network connections
-- Submenu Command: 
-         [
-  "nmtui connect"
-]
-Submenu Show: true
-Submenu Network: null
-Submenu Requirements: nmtui 
+# FEATURES: Table of Contents
+| Feature | Description | Example |
+| --- | --- | --- |
+| get_input | TODO:DESC | TODO:Example | TODO:|
+| serve-debug | Start a simple http server | serve_debug | TODO:|
+| hold_packages | Hold firmware, kernel, and u-boot from upgrades | TODO:Example | TODO:|
+| show_menu | Check for internet connection | TODO:Example | TODO:|
+| see_firmware_hold | Check if firmware, kernel, and u-boot are held back from upgrades | TODO:Example | TODO:|
+| split_files | split the monolithic file to module files | split_files "path/to/file.sh" "path/to/folder" | TODO:|
+| execute_command | Execute a command from the array | (WIP) | TODO:|
+| get_user_continue | Display a Yes/No dialog box (WIP) | get_user_continue | TODO:|
+| show_message | Check for internet connection | TODO:Example | TODO:|
+| process_input | TODO:Desc | process_input | TODO:|
+| unhold_packages | Unhold firmware, kernel, and u-boot from upgrades | TODO:Example | TODO:|
+| get_dependencies | Install missing dependencies | get_dependencies "arg1 arg2 arg3..." | TODO:|
+| consolidate_files | build a monolithic file from the module files | consolidate_files "path/to/folder" "path/to/file.sh" | TODO:|
+| set_colors | Set a background color | (number 0-7) | TODO:|
+| show_infobox | Show info box | TODO:Example | TODO:|
+| rm-deps | Remove installed dependencies | remove_dependencies "arg1 arg2 arg3..." | TODO:|
+| edit_file | Edit a file with an avaliblet editor | "pth/to/file" | TODO:|
+| see_use | Show in file examples | see_use | TODO:|
+| set_user_input | Display a input dialog | set_user_input | TODO:|
+| get_user_input | Display set_user_input results | get_user_input | TODO:|
+| see_ping | Check for internet connection |  | TODO:|
+| parse_json | Show readble json | parse_json | TODO:|
 
-# Menu ID: Localisation
-## Menu Description: Locale Language Region Time Keyboard
-- Submenu ID: L1
-- Submenu Description: Change Local Timezone (WIP)
-- Submenu Command: 
-         [
-  "timedatectl set-timezone "
-]
-Submenu Show: true
-Submenu Network: null
-Submenu Requirements: timedatectl 
-
-# Menu ID: Help
-## Menu Description: About this app
-- Submenu ID: H0
-- Submenu Description: Example Show in file Uses (WIP)
-- Submenu Command: 
-         [
-  "see_use | show_message"
-]
-Submenu Show: true
-Submenu Network: null
-Submenu Requirements:  
-
-- Submenu ID: H1
-- Submenu Description: Example Uses (WIP)
-- Submenu Command: 
-         [
-  "parse_json | show_message"
-]
-Submenu Show: true
-Submenu Network: null
-Submenu Requirements:  
-
-- Submenu ID: H3
-- Submenu Description: Armbian Config Help (WIP)
-- Submenu Command: 
-         [
-  "bash armbian-config --help |  show_message"
-]
-Submenu Show: true
-Submenu Network: null
-Submenu Requirements:  
 

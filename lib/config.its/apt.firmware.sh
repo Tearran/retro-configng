@@ -19,13 +19,6 @@ module_options+=(
 ["hold_packages,example"]="TODO:Example"
 )
 
-#
-# Merge the module options into the global options
-#
-for key in "${!module_options[@]}"; do
-    options["$key"]="${module_options[$key]}"
-done
-
 
 #
 # check the hold status of the packages
@@ -108,4 +101,7 @@ function toggle_hold_status() {
         fi
     done
 }
+
+
+
 

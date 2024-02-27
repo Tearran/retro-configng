@@ -5,8 +5,6 @@
 #
 # Define the options for this module
 #
-
-
 module_options+=(
 ["parse_json,feature"]="parse_json"
 ["parse_json,desc"]="Show readble json"
@@ -17,6 +15,7 @@ module_options+=(
 ["see_use,example"]="see_use"
 
 )
+
 
 #
 # Function to parse the JSON data ouput to markdown, for documentation
@@ -42,17 +41,25 @@ function parse_json() {
 
         # Iterate over each element in the 'sub' array
         for ((j=0; j<$sub_length; j++)); do
-            # Extract the 'id', 'description', 'command', 'show', 'network', and 'requirements' of the current submenu
+            # Extract the 'id', 'description', 'show', 'network', and 'requirements' of the current submenu
             sub_id=$(echo "$json" | jq -r ".menu[$i].sub[$j].id")
             sub_description=$(echo "$json" | jq -r ".menu[$i].sub[$j].description")
-            sub_command=$(echo "$json" | jq -r ".menu[$i].sub[$j].command")
             sub_show=$(echo "$json" | jq -r ".menu[$i].sub[$j].show")
             sub_network=$(echo "$json" | jq -r ".menu[$i].sub[$j].network")
             sub_requirements=$(echo "$json" | jq -r ".menu[$i].sub[$j].requirements[]")
 
+            # Get the length of the 'command' array of the current submenu
+            command_length=$(echo "$json" | jq ".menu[$i].sub[$j].command | length")
+
+            # Iterate over each element in the 'command' array
+            for ((k=0; k<$command_length; k++)); do
+                # Extract the 'command' of the current submenu
+                sub_command=$(echo "$json" | jq -r ".menu[$i].sub[$j].command[$k]")
+                echo "  Submenu Command: $sub_command"
+            done
+
             echo "  Submenu ID: $sub_id"
             echo "  Submenu Description: $sub_description"
-            echo "  Submenu Command: $sub_command"
             echo "  Submenu Show: $sub_show"
             echo "  Submenu Network: $sub_network"
             echo "  Submenu Requirements: $sub_requirements"
@@ -60,6 +67,8 @@ function parse_json() {
         done
     done
 }
+
+
 
 
 #
@@ -80,3 +89,19 @@ function see_use() {
 
     echo -e "$mod_message"
 }
+
+function see_use_readme() {
+    mod_message="| Feature | Description | Example |\n| --- | --- | --- |\n"
+    # Iterate over the options
+    for key in "${!module_options[@]}"; do
+        # Split the key into function_name and type
+        IFS=',' read -r function_name type <<< "$key"
+        # If the type is 'feature', append the option to the help message
+        if [[ "$type" == "feature" ]]; then
+            mod_message+="| ${module_options["$function_name,feature"]} | ${module_options["$function_name,desc"]} | ${module_options["$function_name,example"]} | TODO:|\n"
+        fi
+    done
+
+    echo -e "$mod_message"
+}
+
