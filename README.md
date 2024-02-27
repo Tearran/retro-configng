@@ -1,14 +1,36 @@
-# Experiment: JSON Dialogue Box
-This application is a command-line interface that interacts with a JSON file to perform various operations. It is open-source and licensed under the GPL.
+# Experiment: Retro-config
+This application is a command-line interface that perform various operations. It is open-source and licensed under the GPL.
+ 
+Updated on Tue Feb 27 03:22:41 AM MST 2024.
 
-The application reads a JSON file which contains a menu of commands. Each command in the menu has an associated ID and command string.
+# Retro config
+## Commanline options 
+These options do not work with root privileges and go trough a allow list
+~~~
 
-When the application starts, it generates a top-level menu from the JSON file. The user can select a command from the menu by entering the associated ID. If the user selects a command, the application executes the command.
+user_commands=(
+    ["--help"]="Show this help message"
+    ["--readme"]="Update the Features table"
+    ["--join"]="Merge the module files into one file"
+    ["--split"]="Split the module file into multiple files"
+    ["--json"]="Show json like format of the features"
+    )
 
-Updated on Tue Feb 27 03:04:11 AM MST 2024.
+~~~
+the following commands are --help message
+~~~
+
+Available commands:
+--readme   -	Update the Features table
+--json     -	Show json like format of the features
+--join     -	Merge the module files into one file
+--split    -	Split the module file into multiple files
+--help     -	Show this help message
+
+~~~
 
 ## Example of associtive array 
-see madules in the lib/config.its
+see *.its.sh in lib/config.its
 ~~~
 
 module_options+=( 

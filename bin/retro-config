@@ -183,14 +183,31 @@ generate_readme() {
     local current_date=$(date)    
 
     cat << EOF > "$bin/../README.md"    
-# Experiment: JSON Dialogue Box
-This application is a command-line interface that interacts with a JSON file to perform various operations. It is open-source and licensed under the GPL.
-
-The application reads a JSON file which contains a menu of commands. Each command in the menu has an associated ID and command string.
-
-When the application starts, it generates a top-level menu from the JSON file. The user can select a command from the menu by entering the associated ID. If the user selects a command, the application executes the command.
-
+# Experiment: Retro-config
+This application is a command-line interface that perform various operations. It is open-source and licensed under the GPL.
+ 
 Updated on $current_date.
+
+# Retro config
+## Commanline options 
+These options do not work with root privileges and go trough a allow list
+~~~
+
+user_commands=(
+    ["--help"]="Show this help message"
+    ["--readme"]="Update the Features table"
+    ["--join"]="Merge the module files into one file"
+    ["--split"]="Split the module file into multiple files"
+    ["--json"]="Show json like format of the features"
+    )
+
+~~~
+the following commands are --help message
+~~~
+
+$(see_use_help)
+
+~~~
 
 ## Example of associtive array 
 see *.its.sh in lib/config.its
