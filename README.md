@@ -1,7 +1,7 @@
 # Experiment: Retro-config
 This application is a command-line interface that perform various operations. It is open-source and licensed under the GPL.
  
-Updated on Tue Feb 27 03:22:41 AM MST 2024.
+Updated on Tue Feb 27 10:37:21 PM MST 2024.
 
 # Retro config
 ## Commanline options 
@@ -48,29 +48,31 @@ module_options+=(
 | Feature | Description | Example |
 | --- | --- | --- |
 | get_input | TODO | get_input | TODO:|
-| serve-debug | Start a simple http server to view readme.md and other files in the browser | serve_debug | TODO:|
 | hold_packages | Hold firmware, kernel, and u-boot from upgrades | hold_packages | TODO:|
 | show_menu | Check for internet connection | show_menu | TODO:|
 | see_firmware_hold | Check if firmware, kernel, and u-boot are held back from upgrades | see_firmware_hold | TODO:|
 | generate_top_menu | Generate the top menu | generate_top_menu | TODO:|
-| split_files | split the monolithic file to module files | split_files "path/to/file.sh" "path/to/folder" | TODO:|
+| generate_readme | Generate the README.md file | generate_readme | TODO:|
 | execute_command | Execute a command | execute_command | TODO:|
-| get_user_continue | Display a Yes/No dialog box (WIP) | TODO:Desc | TODO:|
-| show_message | Check for internet connection | echo "message" | show_message  | TODO:|
+| get_user_continue | Display a Yes/No dialog box (WIP) | TODO | TODO:|
+| split_script | Split the script into multiple Module files | split_script | TODO:|
+| show_message | Check for internet connection | pipe output | show_message  | TODO:|
 | reset_colors | Reset the background color | reset_colors | TODO:|
-| process_input | TODO:Desc | TODO:Desc | TODO:|
+| process_input | TODO:Desc | TODO | TODO:|
 | unhold_packages | Unhold firmware, kernel, and u-boot from upgrades | unhold_packages | TODO:|
 | generate_restricted_commands | List of restricted commands for execute_command | generate_restricted_commands | TODO:|
 | get_dependencies | Install missing dependencies | get_dependencies "arg1 arg2 arg3..." | TODO:|
-| consolidate_files | build a monolithic file from the module files | consolidate_files "path/to/folder" "path/to/file.sh" | TODO:|
 | generate_menu | Generate the submenu | generate_menu | TODO:|
+| generate_json | Generate a JSON like format | generate_json | TODO:|
 | set_colors | Set a background color | (number 0-7) | TODO:|
+| serve_doc | Start the Doc server to tst output files | serve_doc | TODO:|
 | show_infobox | Show info box |  TODO | TODO:|
 | remove_dependencies | Remove installed dependencies | remove_dependencies "arg1 arg2 arg3..." | TODO:|
 | edit_file | Edit a file with an avaliblet editor | "pth/to/file" | TODO:|
 | see_use | Show in file examples | see_use | TODO:|
-| set_user_input | Display a input dialog use with get_user_input |  set_user_input | get_input | TODO:|
-| get_user_input | Display set_user_input results |  set_user_input | get_user_input | TODO:|
+| set_user_input | Display a input dialog use with get_user_input | TODO set_user_input | get_input | TODO:|
+| get_user_input | Display set_user_input results | TODO set_user_input | get_user_input | TODO:|
+| join_scripts | Join the script modules into one file | join_scripts | TODO:|
 | see_ping | Check for internet connection warn if none | see_ping | TODO:|
 | parse_json | Show json opjects | parse_json | TODO:|
 
@@ -83,11 +85,6 @@ module_options+=(
     "feature": "get_input",
     "description": "TODO",
     "example": "get_input"
-  },
-  {
-    "feature": "serve-debug",
-    "description": "",
-    "example": ""
   },
   {
     "feature": "hold_packages",
@@ -110,9 +107,9 @@ module_options+=(
     "example": "generate_top_menu"
   },
   {
-    "feature": "split_files",
-    "description": "split the monolithic file to module files",
-    "example": "split_files "path/to/file.sh" "path/to/folder""
+    "feature": "generate_readme",
+    "description": "Generate the README.md file",
+    "example": "generate_readme"
   },
   {
     "feature": "execute_command",
@@ -122,12 +119,17 @@ module_options+=(
   {
     "feature": "get_user_continue",
     "description": "Display a Yes/No dialog box (WIP)",
-    "example": "TODO:Desc"
+    "example": "TODO"
+  },
+  {
+    "feature": "split_script",
+    "description": "Split the script into multiple Module files",
+    "example": "split_script"
   },
   {
     "feature": "show_message",
     "description": "Check for internet connection",
-    "example": "echo "message" | show_message "
+    "example": "pipe output | show_message "
   },
   {
     "feature": "reset_colors",
@@ -137,7 +139,7 @@ module_options+=(
   {
     "feature": "process_input",
     "description": "TODO:Desc",
-    "example": "TODO:Desc"
+    "example": "TODO"
   },
   {
     "feature": "unhold_packages",
@@ -155,19 +157,24 @@ module_options+=(
     "example": "get_dependencies "arg1 arg2 arg3...""
   },
   {
-    "feature": "consolidate_files",
-    "description": "build a monolithic file from the module files",
-    "example": "consolidate_files "path/to/folder" "path/to/file.sh""
-  },
-  {
     "feature": "generate_menu",
     "description": "Generate the submenu",
     "example": "generate_menu"
   },
   {
+    "feature": "generate_json",
+    "description": "Generate a JSON like format",
+    "example": "generate_json"
+  },
+  {
     "feature": "set_colors",
     "description": "Set a background color",
     "example": "(number 0-7)"
+  },
+  {
+    "feature": "serve_doc",
+    "description": "Start the Doc server to tst output files",
+    "example": "serve_doc"
   },
   {
     "feature": "show_infobox",
@@ -192,12 +199,17 @@ module_options+=(
   {
     "feature": "set_user_input",
     "description": "Display a input dialog use with get_user_input",
-    "example": " set_user_input | get_input"
+    "example": "TODO set_user_input | get_input"
   },
   {
     "feature": "get_user_input",
     "description": "Display set_user_input results",
-    "example": " set_user_input | get_user_input"
+    "example": "TODO set_user_input | get_user_input"
+  },
+  {
+    "feature": "join_scripts",
+    "description": "Join the script modules into one file",
+    "example": "join_scripts"
   },
   {
     "feature": "see_ping",
