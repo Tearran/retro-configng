@@ -16,7 +16,7 @@ module_options+=(
 
 ["show_message,feature"]="show_message"
 ["show_message,desc"]="Check for internet connection"
-["show_message,example"]="echo \"message\" | show_message "
+["show_message,example"]="pipe output | show_message "
 
 ["show_infobox,feature"]="show_infobox"
 ["show_infobox,desc"]="Show info box"
@@ -24,19 +24,19 @@ module_options+=(
 
 ["set_user_input,feature"]="set_user_input"
 ["set_user_input,desc"]="Display a input dialog use with get_user_input"
-["set_user_input,example"]=" set_user_input | get_input"
+["set_user_input,example"]="TODO set_user_input | get_input"
 
 ["get_user_input,feature"]="get_user_input"
 ["get_user_input,desc"]="Display set_user_input results"
-["get_user_input,example"]=" set_user_input | get_user_input"
+["get_user_input,example"]="TODO set_user_input | get_user_input"
 
 ["get_user_continue,feature"]="get_user_continue"
 ["get_user_continue,desc"]="Display a Yes/No dialog box (WIP)"
-["get_user_continue,example"]="TODO:Desc"
+["get_user_continue,example"]="TODO"
 
 ["process_input,feature"]="process_input"
 ["process_input,desc"]="TODO:Desc"
-["process_input,example"]="TODO:Desc"
+["process_input,example"]="TODO"
 )
 
 
@@ -57,7 +57,7 @@ function get_input() {
 #
 # Function to display a menu and get the user's choice
 #
-show_menu(){
+function show_menu(){
     # Get the input and convert it into an array of options
     inpu_raw=$(cat)
     # Remove the lines befor -h
@@ -84,7 +84,7 @@ show_menu(){
 #
 # Function to display a message box
 #
-show_message() {
+function show_message() {
     # Read the input from the pipe
     input=$(cat)
 
@@ -101,7 +101,7 @@ show_message() {
 #
 # Function to display an infobox with a message
 #
-show_infobox() {
+function show_infobox() {
     export TERM=ansi
     local input
     local BACKTITLE="Processing"
@@ -130,7 +130,7 @@ show_infobox() {
 #
 # Function to get user input (WIP)
 #
-set_user_input() {
+function set_user_input() {
     # Get the file path from the function argument
     local file="$1"
 
@@ -154,7 +154,7 @@ set_user_input() {
 #
 # Function to get user input (WIP)
 #
-get_user_input() {
+function get_user_input() {
     local input=$($DIALOG --inputbox "Please enter your input: " 10 60 3>&1 1>&2 2>&3)
 
     if [ $? = 0 ]; then
@@ -170,7 +170,7 @@ get_user_input() {
 #
 # Function to display a Yes/No dialog box (WIP)
 #
-get_user_continue() {
+function get_user_continue() {
     local message="$1"
     local next_action=$2
 
@@ -187,7 +187,7 @@ get_user_continue() {
 # Function to process the user's input
 #
 # Function to process the user's choice
-process_input() {
+function process_input() {
     local input="$1"
     if [ "$input" = "No" ]; then
         exit 1
