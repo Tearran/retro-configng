@@ -111,7 +111,6 @@ trap reset_colors EXIT
 # Function to generate the top menu
 #
 function generate_top_menu() {
-    color_option="green"
     local menu_options=()
     while IFS= read -r id
     do
@@ -128,7 +127,7 @@ function generate_top_menu() {
             # If the condition field is empty or null, add the menu item to the menu
             menu_options+=("$id" "  -  $description")
         fi
-    done < <(jq -r '.menu[] | select(.show==true) | "\(.id)\n\(.description)\n\(.condition)"' "$json_file")
+    done < <(jq -r '.menu[] | select(.show==true) | "\(.id)\n\(.description)\n\(.condition)"' "$json_file"  || exit 1 )
 
     set_colors 4
 

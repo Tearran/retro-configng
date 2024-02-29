@@ -1,0 +1,128 @@
+{
+    "menu": [
+        {
+            "id": "Run Time",
+            "description": "Functions Play ground",
+            "show": true,
+            "sub": [
+                {
+                    "id": "T0",
+                    "description": "Check Colors (testing)",
+                    "command": [
+                        "get_user_continue \"This will iterate 8 colors \nDo you want to continue?\" process_input", 
+                        "for i in {0..7}; do set_colors $i && echo Color code $i | show_infobox; done;",
+                        "clear && set_colors 0", 
+                        "echo 'Colors 0-7 test complete' | show_message ;"
+                    ],
+                    "show": true,
+                    "requirements": [""]
+                },{
+                    "id": "T1",
+                    "description": "Check when apt was updated and if ts running",
+                    "command": [
+                        "see_current_apt | show_message ; "
+                    ],
+                    "show": true,
+                    "requirements": ["apt"]
+                },{
+                    "id": "T2",
+                    "description": "See ping, see firmware, ok box and process_input",
+                    "command": [
+                        "get_user_continue \"$( see_ping ) \n Continue?\" process_input",
+                        "get_user_continue \"$( see_firmware_hold ) \nContinue?\" process_input"
+                    ],
+                    "show": true,
+                    "requirements": [""]
+                },{
+                    "id": "T3",
+                    "description": "Pipe armbianmonitor -m to show_infobox",
+                    "command":[ 
+                        "armbianmonitor -m | show_infobox"
+                    ],
+                    "show": true,
+                    "requirements": [""]
+                }, {
+                    "id": "T4",
+                    "description": "Alternitive menu(WIP)(tsting)",
+                    "command": [
+                        "{ armbianmonitor -h | show_menu ;} | show_message"
+
+                    ],
+                    "show": true,
+                    "requirements": ["armbianmonitor"]
+                }
+            ]
+        }, {
+            "id": "Network",
+            "description": "Wireless, Ethernet, and Network settings",
+            "show": true,
+            "sub": [
+                {
+                    "id": "N0",
+                    "description": "Manage wifi network connections",
+                    "command": [
+                        "nmtui connect"
+                    ],
+                    "show": true,
+                    "requirements": ["nmtui"]
+                }
+            ]
+        },
+        {
+            "id": "Localisation",
+            "description": "Locale Language Region Time Keyboard",
+            "show": false,
+            "sub": [
+                {
+                    "id": "L1",
+                    "description": "Change Local Timezone (WIP)",
+                    "command": [
+                        "timedatectl set-timezone "
+                    ],
+                    "show": true,
+                    "requirements": ["timedatectl"]
+                }
+            ]
+        },
+        {
+            "id": "Help",
+            "description": "About this app",
+            "show": true,
+            "sub": [
+                {
+                    "id": "H0",
+                    "description": "Show in file Use, Bash associative arrays (WIP)",
+                    "command": [
+                        "see_use | show_message"
+                    ],
+                    "show": true,
+                    "requirements": [""]
+                },                {
+                    "id": "H1",
+                    "description": "Show in file Use, JSON Objects (WIP)",
+                    "command": [
+                        "parse_json | show_message"
+                    ],
+                    "show": true,
+                    "requirements": [""]
+                },{
+                    "id": "H2",
+                    "description": "Dev Command line options (WIP)",
+                    "command": [
+                        "see_use_help | show_message "
+                    ],
+                    "show": true,
+                    "requirements": [""]
+                }, {
+                    "id": "H3",
+                    "description": "Armbian Config Help (WIP)",
+                    "command":[
+                         "bash armbian-config --help |  show_message"
+                    ],
+                         "show": true,
+                    "requirements": [""]
+                }
+            ]
+        }
+    ]
+}

@@ -155,7 +155,7 @@ function set_user_input() {
 # Function to get user input (WIP)
 #
 function get_user_input() {
-    local input=$($DIALOG --inputbox "Please enter your input: " 10 60 3>&1 1>&2 2>&3)
+    local input=$($DIALOG --inputbox "$task_tile" 10 60 3>&1 1>&2 2>&3)
 
     if [ $? = 0 ]; then
         $1 "$input"
@@ -165,6 +165,31 @@ function get_user_input() {
 }
 
 
+
+show_menu_alpha(){
+
+    # Get the input and convert it into an array of options
+    inpu_raw=$(cat)
+    # Remove the lines befor -h 
+	input=$(echo "$inpu_raw" | sed 's/-\([a-zA-Z]\)/\1/' | grep '^  [a-zA-Z] ' | grep -v '\[')
+    options=()
+    while read -r line; do
+        package=$(echo "$line" | awk '{print $1}')
+        description=$(echo "$line" | awk '{$1=""; print $0}' | sed 's/^ *//')
+        options+=("$package" "$description")
+    done <<< "$input"
+
+    # Display the menu and get the user's choice
+    [[ $DIALOG != "bash" ]] && choice=$($DIALOG --title "Menu" --menu "Choose an option:" 0 0 9 "${options[@]}" 3>&1 1>&2 2>&3)
+
+	# Check if the user made a choice
+	if [ $? -eq 0 ]; then
+	    echo "$choice"
+	else
+	    exit 0
+	fi 
+
+	}
 
 
 #
