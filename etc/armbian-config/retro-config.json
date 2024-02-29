@@ -1,7 +1,7 @@
 {
     "menu": [
         {
-            "id": "Run Time",
+            "id": "Tests",
             "description": "Functions Play ground",
             "show": true,
             "sub": [
@@ -64,7 +64,7 @@
         {
             "id": "Localisation",
             "description": "Locale Language Region Time Keyboard",
-            "show": false,
+            "show": true,
             "sub": [
                 {
                     "id": "L1",
@@ -92,9 +92,9 @@
                     "requirements": [""]
                 },                {
                     "id": "H1",
-                    "description": "Show in file Use, JSON Objects (WIP)",
+                    "description": "About tis app(WIP)",
                     "command": [
-                        "parse_json | show_message"
+                        "echo \"This is part development tool to test feature. | show_message"
                     ],
                     "show": true,
                     "requirements": [""]

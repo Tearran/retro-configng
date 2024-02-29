@@ -91,7 +91,7 @@
             "sub": [
                 {
                     "id": "H0",
-                    "description": "Show in file Use, Bash associative arrays (WIP)",
+                    "description": "Show features (WIP)",
                     "command": [
                         "see_use | show_message"
                     ],
@@ -99,9 +99,9 @@
                     "requirements": [""]
                 },                {
                     "id": "H1",
-                    "description": "Show in file Use, JSON Objects (WIP)",
+                    "description": "About this app. (WIP)",
                     "command": [
-                        "parse_json | show_message"
+                        "echo \"This is part development tool to test new features.\" | show_message"
                     ],
                     "show": true,
                     "requirements": [""]
