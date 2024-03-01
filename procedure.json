@@ -18,8 +18,9 @@
                     "requirements": [""]
                 },{
                     "id": "T1",
-                    "description": "Check when apt was updated and if ts running",
+                    "description": "Chack if apt running and las",
                     "command": [
+                        "echo \"procedure: see_current_apt | show_message ; \" | show_message ",
                         "see_current_apt | show_message ; "
                     ],
                     "show": true,
@@ -89,8 +90,17 @@
             "description": "About this app",
             "show": true,
             "sub": [
-                {
+            {
                     "id": "H0",
+                    "description": "About this app. (WIP)",
+                    "command": [
+                        "echo \"This script is a bash procedure defined in a JSON file for configuring your Linux system.\" | show_message"
+                    ],
+                    "show": true,
+                    "requirements": [""]
+                },
+                {
+                    "id": "H1",
                     "description": "Show features (WIP)",
                     "command": [
                         "see_use | show_message"
@@ -98,16 +108,8 @@
                     "show": true,
                     "requirements": [""]
                 },                {
-                    "id": "H1",
-                    "description": "About this app. (WIP)",
-                    "command": [
-                        "echo \"This is part development tool to test new features.\" | show_message"
-                    ],
-                    "show": true,
-                    "requirements": [""]
-                },{
                     "id": "H2",
-                    "description": "Dev Command line options (WIP)",
+                    "description": "User Command line options (non admin)(WIP)",
                     "command": [
                         "see_use_help | show_message "
                     ],
@@ -119,7 +121,7 @@
                     "command":[
                          "bash armbian-config --help |  show_message"
                     ],
-                         "show": true,
+                    "show": false,
                     "requirements": [""]
                 }
             ]

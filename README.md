@@ -1,7 +1,7 @@
 # Experiment: Retro-config
 This application is a command-line interface that perform various operations. It is open-source and licensed under the GPL.
  
-Updated on Thu Feb 29 01:42:02 AM MST 2024.
+Updated on Fri Mar  1 10:49:02 AM MST 2024.
 
 # Retro config
 ## Commanline options 
@@ -20,12 +20,15 @@ user_commands=(
 the following commands are --help message
 ~~~
 
-Available commands:
+Available User commands:
+--desktop  -	GUI to change user keyboard settings
 --readme   -	Update the Features table
 --json     -	Show json like format of the features
 --join     -	Merge the module files into one file
 --split    -	Split the module file into multiple files
---help     -	Show this help message
+
+Available Admin commands:
+--option   -	(WIP) Sudo options
 
 ~~~
 
@@ -56,6 +59,7 @@ module_options+=(
 | execute_command | Execute a command | execute_command | TODO:|
 | get_user_continue | Display a Yes/No dialog box (WIP) | TODO | TODO:|
 | split_script | Split the script into multiple Module files | split_script | TODO:|
+| serve_doc | Set User desktop keyboard layout (no sudo) | desktop_keyboard | TODO:|
 | show_message | Check for internet connection | pipe output | show_message  | TODO:|
 | reset_colors | Reset the background color | reset_colors | TODO:|
 | process_input | TODO:Desc | TODO | TODO:|
@@ -125,6 +129,11 @@ module_options+=(
     "feature": "split_script",
     "description": "Split the script into multiple Module files",
     "example": "split_script"
+  },
+  {
+    "feature": "serve_doc",
+    "description": "Start the Doc server to tst output files",
+    "example": "serve_doc"
   },
   {
     "feature": "show_message",

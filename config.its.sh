@@ -109,6 +109,9 @@ update_packages() {
     return 0
 }
 
+
+
+
 # Start of apt.firmware.sh
 
 
@@ -212,6 +215,9 @@ function toggle_hold_status() {
         fi
     done
 }
+
+
+
 
 
 
@@ -322,6 +328,9 @@ split_script() {
     ' "$input_file"
 }
 
+
+
+
 # Start of ping.network.sh
 
 
@@ -358,6 +367,9 @@ function see_ping() {
 		Press CTRL C to stop or any key to ignore and continue."
 	fi
 }
+
+
+
 
 
 
@@ -470,6 +482,9 @@ function see_use_readme() {
 
     echo -e "$mod_message"
 }
+
+
+
 
 
 
@@ -586,7 +601,6 @@ trap reset_colors EXIT
 # Function to generate the top menu
 #
 function generate_top_menu() {
-    color_option="green"
     local menu_options=()
     while IFS= read -r id
     do
@@ -603,7 +617,7 @@ function generate_top_menu() {
             # If the condition field is empty or null, add the menu item to the menu
             menu_options+=("$id" "  -  $description")
         fi
-    done < <(jq -r '.menu[] | select(.show==true) | "\(.id)\n\(.description)\n\(.condition)"' "$json_file")
+    done < <(jq -r '.menu[] | select(.show==true) | "\(.id)\n\(.description)\n\(.condition)"' "$json_file"  || exit 1 )
 
     set_colors 4
 
@@ -686,6 +700,9 @@ function execute_command() {
         fi
     done
 }
+
+
+
 
 
 
@@ -848,7 +865,7 @@ function set_user_input() {
 # Function to get user input (WIP)
 #
 function get_user_input() {
-    local input=$($DIALOG --inputbox "Please enter your input: " 10 60 3>&1 1>&2 2>&3)
+    local input=$($DIALOG --inputbox "$task_tile" 10 60 3>&1 1>&2 2>&3)
 
     if [ $? = 0 ]; then
         $1 "$input"
@@ -858,6 +875,31 @@ function get_user_input() {
 }
 
 
+
+show_menu_alpha(){
+
+    # Get the input and convert it into an array of options
+    inpu_raw=$(cat)
+    # Remove the lines befor -h 
+	input=$(echo "$inpu_raw" | sed 's/-\([a-zA-Z]\)/\1/' | grep '^  [a-zA-Z] ' | grep -v '\[')
+    options=()
+    while read -r line; do
+        package=$(echo "$line" | awk '{print $1}')
+        description=$(echo "$line" | awk '{$1=""; print $0}' | sed 's/^ *//')
+        options+=("$package" "$description")
+    done <<< "$input"
+
+    # Display the menu and get the user's choice
+    [[ $DIALOG != "bash" ]] && choice=$($DIALOG --title "Menu" --menu "Choose an option:" 0 0 9 "${options[@]}" 3>&1 1>&2 2>&3)
+
+	# Check if the user made a choice
+	if [ $? -eq 0 ]; then
+	    echo "$choice"
+	else
+	    exit 0
+	fi 
+
+	}
 
 
 #
@@ -894,6 +936,9 @@ function process_input() {
 
 
 
+
+
+
 # Start of set.documents.sh
 
 module_options+=(
@@ -916,7 +961,7 @@ generate_readme() {
     # Get the current date
     local current_date=$(date)    
 
-    cat << EOF > "$bin/../README.md"    
+    cat << EOF > "$bin/README.md"
 # Experiment: Retro-config
 This application is a command-line interface that perform various operations. It is open-source and licensed under the GPL.
  
@@ -1007,6 +1052,9 @@ done
 echo "]"
 }
 
+
+
+
 # Start of set.file.sh
 
 
@@ -1064,6 +1112,46 @@ function edit_file() {
 # This is done last so that the module's functions are not added to the options array
 # Join and split may produce multibel of the for loop here. 
 #
+
+
+
+
+
+
+# Start of zenity.keyboard.sh
+
+
+
+module_options+=(
+["desktop_keyboard,feature"]="serve_doc"
+["desktop_keyboard,desc"]="Set User desktop keyboard layout (no sudo)"
+["desktop_keyboard,example"]="desktop_keyboard"
+)
+
+desktop_keyboard() {
+    zenity --info --text "GUI Test for User (non admin) preferred keyboard layout"
+    sleep 2
+
+    layout=$(zenity --entry --text "Please enter your preferred keyboard layout:")
+
+    # Check if the user clicked Cancel or entered nothing
+    if [ $? -ne 0 ] || [ -z "$layout" ]; then
+        exit 1
+    fi
+
+    if grep -q "setxkbmap -layout" ~/.xinitrc; then
+        sed -i '/setxkbmap -layout/d' ~/.xinitrc
+    fi
+
+    # Only append to .xinitrc if $layout is not empty
+    if [ -n "$layout" ]; then
+        echo "setxkbmap -layout $layout" >> ~/.xinitrc
+        zenity --info --text "Command to set keyboard layout to $layout has been added to ~/.xinitrc"
+    fi
+}
+
+
+
 
 
 
