@@ -1,36 +1,7 @@
 # Experiment: Retro-config
 This application is a command-line interface that perform various operations. It is open-source and licensed under the GPL.
  
-Updated on Fri Mar  1 10:49:02 AM MST 2024.
-
-# Retro config
-## Commanline options 
-These options do not work with root privileges and go trough a allow list
-~~~
-
-user_commands=(
-    ["--help"]="Show this help message"
-    ["--readme"]="Update the Features table"
-    ["--join"]="Merge the module files into one file"
-    ["--split"]="Split the module file into multiple files"
-    ["--json"]="Show json like format of the features"
-    )
-
-~~~
-the following commands are --help message
-~~~
-
-Available User commands:
---desktop  -	GUI to change user keyboard settings
---readme   -	Update the Features table
---json     -	Show json like format of the features
---join     -	Merge the module files into one file
---split    -	Split the module file into multiple files
-
-Available Admin commands:
---option   -	(WIP) Sudo options
-
-~~~
+Updated on Fri Mar  8 09:09:31 AM MST 2024.
 
 ## Example of associtive array 
 see *.its.sh in lib/config.its

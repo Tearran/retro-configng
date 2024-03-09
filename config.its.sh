@@ -73,7 +73,7 @@ function get_dependencies() {
         fi
         echo "$dep is installed."
     done
-#    echo "All dependencies are installed."
+
    return 0
 }
 
@@ -142,13 +142,14 @@ function see_firmware_hold() {
     for package in "${packages[@]}"; do
         dpkg --get-selections | grep "$package" | grep "hold"
         if [ $? -eq 0 ]; then
-            echo " $package is held back from upgrades."
+            # echo " $package is held back from upgrades."
             export firmware_update="unhold"
         else
-            echo " $package is not held back from upgrades."
+            # echo " $package is not held back from upgrades."
             export firmware_update="hold"
         fi
     done
+    
 }
 
 
@@ -173,7 +174,8 @@ function unhold_packages() {
     packages=("linux-image-current-$LINUXFAMILY" "linux-u-boot-$BOARD-$BRANCH" "u-boot-tools")
 
     for package in "${packages[@]}"; do
-        sudo apt-mark unhold "$package"
+        sudo apt-mark unhold "$package" 
+        firmware_update+="hold"
     done
 }
 
@@ -183,36 +185,22 @@ function unhold_packages() {
 #
 function check_hold_status() {
     source /etc/armbian-release
+    export firmware_update
     packages=("linux-image-current-$LINUXFAMILY" "linux-u-boot-$BOARD-$BRANCH" "u-boot-tools")
 
     for package in "${packages[@]}"; do
-        dpkg --get-selections | grep "$package" | grep "hold"
+        dpkg --get-selections | grep "$package" | grep "hold"  
         if [ $? -eq 0 ]; then
             echo "$package is held back from upgrades."
-            export firmware_update="unhold"
+          firmware_updat+="unhold "
         else
             echo "$package is not held back from upgrades."
-            export firmware_update="hold"
+         
         fi
     done
 }
 
 
-#
-# Function to toggle the hold status of the packages
-#
-function toggle_hold_status() {
-    source /etc/armbian-release
-    packages=("linux-image-current-$LINUXFAMILY" "linux-u-boot-$BOARD-$BRANCH" "u-boot-tools")
-
-    for package in "${packages[@]}"; do
-        if [[ $firmware_update == "unhold" ]]; then
-            sudo apt-mark unhold "$package"
-        else
-            sudo apt-mark hold "$package"
-        fi
-    done
-}
 
 
 # Start of dev.config.sh
@@ -653,7 +641,7 @@ function generate_menu() {
     do
         IFS= read -r description
         submenu_options+=("$id" "  -  $description")
-    done < <(jq -r --arg parent_id "$parent_id" '.menu[] | .. | objects | select(.id==$parent_id) | .sub[]? | select(.show==true) | "\(.id)\n\(.description)"' "$json_file")
+    done < <(jq -r --arg parent_id "$parent_id" '.menu[] | select(.id==$parent_id) | .sub[]? | select(.show==true) | "\(.id)\n\(.description)"' <<< "$json_data")
     set_colors 2 # "$?"
 
     local OPTION=$($DIALOG --title "Menu" --menu "Choose an option" 0 80 9 "${submenu_options[@]}" \
@@ -961,32 +949,11 @@ generate_readme() {
     # Get the current date
     local current_date=$(date)    
 
-    cat << EOF > "$bin/README.md"
+    cat << EOF > "$script_dir/README.md"
 # Experiment: Retro-config
 This application is a command-line interface that perform various operations. It is open-source and licensed under the GPL.
  
 Updated on $current_date.
-
-# Retro config
-## Commanline options 
-These options do not work with root privileges and go trough a allow list
-~~~
-
-user_commands=(
-    ["--help"]="Show this help message"
-    ["--readme"]="Update the Features table"
-    ["--join"]="Merge the module files into one file"
-    ["--split"]="Split the module file into multiple files"
-    ["--json"]="Show json like format of the features"
-    )
-
-~~~
-the following commands are --help message
-~~~
-
-$(see_use_help)
-
-~~~
 
 ## Example of associtive array 
 see *.its.sh in lib/config.its

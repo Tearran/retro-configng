@@ -53,7 +53,30 @@
                     "requirements": ["armbianmonitor"]
                 }
             ]
-        }, {
+        },{
+            "id": "System",
+            "description": "System wide and admin settings",
+            "show": true,
+            "sub": [
+                {
+                    "id": "S0",
+                    "description": "Freeze (HOLD) Kernel, and firmware hold for stable boot ",
+                    "command": [
+                        "hold_packages | show_infobox "
+                    ],
+                    "show": true,
+                    "requirements": [""]
+                },       {
+                    "id": "S1",
+                    "description": "DeFreeze (UNHOLD) Kernel, and firmware hold for stable boot ",
+                    "command": [
+                        "unhold_packages | show_infobox "
+                    ],
+                    "show": true,
+                    "requirements": [""]
+                }
+            ]
+        },{
             "id": "Network",
             "description": "Wireless, Ethernet, and Network settings",
             "show": true,
@@ -65,12 +88,28 @@
                         "nmtui connect"
                     ],
                     "show": true,
-                    "requirements": ["nmtui"]
+                    "requirements": [""]
                 }
             ]
         },
         {
             "id": "Localisation",
+            "description": "Locale Language Region Time Keyboard",
+            "show": true,
+            "sub": [
+                {
+                    "id": "L1",
+                    "description": "Change Local Timezone (WIP)",
+                    "command": [
+                        "timedatectl set-timezone "
+                    ],
+                    "show": true,
+                    "requirements": ["timedatectl"]
+                }
+            ]
+        },
+        {
+            "id": "Personalization ",
             "description": "Locale Language Region Time Keyboard",
             "show": false,
             "sub": [
@@ -106,22 +145,6 @@
                         "see_use | show_message"
                     ],
                     "show": true,
-                    "requirements": [""]
-                },                {
-                    "id": "H2",
-                    "description": "User Command line options (non admin)(WIP)",
-                    "command": [
-                        "see_use_help | show_message "
-                    ],
-                    "show": true,
-                    "requirements": [""]
-                }, {
-                    "id": "H3",
-                    "description": "Armbian Config Help (WIP)",
-                    "command":[
-                         "bash armbian-config --help |  show_message"
-                    ],
-                    "show": false,
                     "requirements": [""]
                 }
             ]
