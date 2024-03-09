@@ -3,11 +3,11 @@
         {
             "id": "Run Time",
             "description": "Functions Play ground",
-            "show": true,
+            "show": false,
             "sub": [
                 {
                     "id": "T0",
-                    "description": "Check Colors (testing)",
+                    "description": "Check Colors",
                     "command": [
                         "get_user_continue \"This will iterate 8 colors \nDo you want to continue?\" process_input", 
                         "for i in {0..7}; do set_colors $i && echo Color code $i | show_infobox; done;",

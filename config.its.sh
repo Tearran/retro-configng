@@ -1,5 +1,5 @@
 #!/bin/bash
-	declare -A module_options
+
 # Start of apt.dependencies.sh
 
 #
@@ -110,8 +110,6 @@ update_packages() {
 }
 
 
-
-
 # Start of apt.firmware.sh
 
 
@@ -217,13 +215,6 @@ function toggle_hold_status() {
 }
 
 
-
-
-
-
-
-
-
 # Start of dev.config.sh
 
 
@@ -302,10 +293,6 @@ join_scripts() {
             echo "" >> "$output_file"
         fi
     done
-
-    #echo "    for key in \"\${!module_options[@]}\"; do" >> "$output_file"
-    #echo "        options[\"\$key\"]=\"\${module_options[\$key]}\"" >> "$output_file"
-    #echo "    done" >> "$output_file"
 }
 
 
@@ -327,8 +314,6 @@ split_script() {
         }
     ' "$input_file"
 }
-
-
 
 
 # Start of ping.network.sh
@@ -367,13 +352,6 @@ function see_ping() {
 		Press CTRL C to stop or any key to ignore and continue."
 	fi
 }
-
-
-
-
-
-
-
 
 
 # Start of see.help.messgaes.sh
@@ -482,9 +460,6 @@ function see_use_readme() {
 
     echo -e "$mod_message"
 }
-
-
-
 
 
 
@@ -600,7 +575,7 @@ trap reset_colors EXIT
 #
 # Function to generate the top menu
 #
-function generate_top_menu() {
+function generate_top_menu_save() {
     local menu_options=()
     while IFS= read -r id
     do
@@ -617,7 +592,40 @@ function generate_top_menu() {
             # If the condition field is empty or null, add the menu item to the menu
             menu_options+=("$id" "  -  $description")
         fi
-    done < <(jq -r '.menu[] | select(.show==true) | "\(.id)\n\(.description)\n\(.condition)"' "$json_file"  || exit 1 )
+    done < <(jq -r '.menu[] | select(.show==true) | "\(.id)\n\(.description)\n\(.condition)"' "$modified_json_data"  || exit 1 )
+
+    set_colors 4
+
+    local OPTION=$($DIALOG --title "Menu" --menu "Choose an option" 0 80 9 "${menu_options[@]}" 3>&1 1>&2 2>&3)
+    local exitstatus=$?
+
+    if [ $exitstatus = 0 ]; then
+        if [ "$OPTION" == "" ]; then
+            exit 0
+        fi    
+        generate_menu "$OPTION"
+    fi
+}
+
+generate_top_menu() {
+    local json_data=$1
+    local menu_options=()
+    while IFS= read -r id
+    do
+        IFS= read -r description
+        IFS= read -r requirements
+        # If the condition field is not empty and not null, run the function specified in the condition
+        if [[ -n $requirements && $requirements != "null" ]]; then
+            local condition_result=$(eval $requirements)
+            # If the function returns a truthy value, add the menu item to the menu
+            if [[ $condition_result ]]; then
+                menu_options+=("$id" "  -  $description ($something)")
+            fi
+        else
+            # If the condition field is empty or null, add the menu item to the menu
+            menu_options+=("$id" "  -  $description ")
+        fi
+    done < <(echo "$json_data" | jq -r '.menu[] | select(.show==true) | "\(.id)\n\(.description)\n\(.condition)"' || exit 1 )
 
     set_colors 4
 
@@ -670,7 +678,6 @@ function generate_menu() {
         fi
     fi
 }
-
 
 #
 # Function to generate the list of restricted commands
@@ -932,13 +939,6 @@ function process_input() {
 }
 
 
-
-
-
-
-
-
-
 # Start of set.documents.sh
 
 module_options+=(
@@ -1149,9 +1149,3 @@ desktop_keyboard() {
         zenity --info --text "Command to set keyboard layout to $layout has been added to ~/.xinitrc"
     fi
 }
-
-
-
-
-
-
