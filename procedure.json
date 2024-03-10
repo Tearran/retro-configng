@@ -1,15 +1,15 @@
 {
     "menu": [
         {
-            "id": "Run Time",
+            "id": "Testing",
             "description": "Functions Play ground",
-            "show": false,
+            "show": true,
             "sub": [
                 {
                     "id": "T0",
                     "description": "Check Colors",
                     "command": [
-                        "get_user_continue \"This will iterate 8 colors \nDo you want to continue?\" process_input", 
+                        "get_user_continue \"Change background procedure\n'set_colors #' number 0-7\nDo you want to continue?\" process_input", 
                         "for i in {0..7}; do set_colors $i && echo Color code $i | show_infobox; done;",
                         "clear && set_colors 0", 
                         "echo 'Colors 0-7 test complete' | show_message ;"
@@ -18,32 +18,23 @@
                     "requirements": [""]
                 },{
                     "id": "T1",
-                    "description": "Chack if apt running and las",
+                    "description": "Chack if apt running",
                     "command": [
-                        "echo \"procedure: see_current_apt | show_message ; \" | show_message ",
+                        "echo \"procedure: 'see_current_apt'\n next example uses\n see_current_apt | show_message ; \" | show_message ",
                         "see_current_apt | show_message ; "
                     ],
                     "show": true,
                     "requirements": ["apt"]
                 },{
                     "id": "T2",
-                    "description": "See ping, see firmware, ok box and process_input",
+                    "description": "See ping, ok box",
                     "command": [
-                        "get_user_continue \"$( see_ping ) \n Continue?\" process_input",
-                        "get_user_continue \"$( see_firmware_hold ) \nContinue?\" process_input"
+                        "get_user_continue \"$( see_ping ) \n Continue?\" process_input"
                     ],
                     "show": true,
                     "requirements": [""]
                 },{
                     "id": "T3",
-                    "description": "Pipe armbianmonitor -m to show_infobox",
-                    "command":[ 
-                        "armbianmonitor -m | show_infobox"
-                    ],
-                    "show": true,
-                    "requirements": [""]
-                }, {
-                    "id": "T4",
                     "description": "Alternitive menu(WIP)(tsting)",
                     "command": [
                         "{ armbianmonitor -h | show_menu ;} | show_message"
@@ -60,17 +51,9 @@
             "sub": [
                 {
                     "id": "S0",
-                    "description": "Freeze (HOLD) Kernel, and firmware hold for stable boot ",
-                    "command": [
-                        "hold_packages | show_infobox "
-                    ],
-                    "show": true,
-                    "requirements": [""]
-                },       {
-                    "id": "S1",
-                    "description": "DeFreeze (UNHOLD) Kernel, and firmware hold for stable boot ",
-                    "command": [
-                        "unhold_packages | show_infobox "
+                    "description": "CLI System Monitor",
+                    "command":[ 
+                        "armbianmonitor -m | show_infobox"
                     ],
                     "show": true,
                     "requirements": [""]
@@ -89,41 +72,82 @@
                     ],
                     "show": true,
                     "requirements": [""]
-                }
-            ]
-        },
-        {
-            "id": "Localisation",
-            "description": "Locale Language Region Time Keyboard",
-            "show": true,
-            "sub": [
-                {
-                    "id": "L1",
-                    "description": "Change Local Timezone (WIP)",
+                },{
+                    "id": "N1",
+                    "description": "Remove Bluetooth support",
                     "command": [
-                        "timedatectl set-timezone "
+                        "debconf-apt-progress -- apt -y --no-install-recommends install lirc"
                     ],
                     "show": true,
-                    "requirements": ["timedatectl"]
+                    "requirements": [""]
                 }
             ]
         },
-        {
-            "id": "Personalization ",
-            "description": "Locale Language Region Time Keyboard",
-            "show": false,
-            "sub": [
-                {
-                    "id": "L1",
-                    "description": "Change Local Timezone (WIP)",
-                    "command": [
-                        "timedatectl set-timezone "
-                    ],
-                    "show": true,
-                    "requirements": ["timedatectl"]
-                }
+
+
+ {
+    "id": "Localisation",
+    "description": "Localisation",
+    "show": true,
+    "sub": [
+            {
+                "id": "L1",
+                "description": "Change admin Desktop Keyboard (WIP)",
+                "command": [
+                    "get_user_continue \"Warning: This will edit file $HOME/.xinitrc\nNano users: \n ctrl+s to save \n ctrl+x to return to menu\n Coninue?\" process_input",
+                    "edit_file $HOME/.xinitrc"
+                    
+                ],
+                "show": true,
+                "requirements": [""]
+            }
             ]
-        },
+}, 
+{
+    "id": "Personalisation",
+    "description": "Personalisation",
+    "show": true,
+    "sub": [
+            {
+                "id": "P0",
+                "description": "Change User Desktop Keyboard (WIP)",
+                "command": [
+                    "get_user_continue \"Warning: This will edit file $HOME/.xinitrc\nNano users: \n ctrl+s to save \n ctrl+x to return to menu\n Coninue?\" process_input",
+                    "edit_file $HOME/.xinitrc"
+                    
+                ],
+                "show": true,
+                "requirements": [""]
+            },
+            {
+                "id": "T5",
+                "description": "GUI Desktop settings (keyboard)(WIP)",
+                "command": [
+                    "desktop_keyboard && echo \"done\""
+                ],
+                "show": true,
+                "requirements": [""]
+            }
+            ]
+}, 
+{
+    "id": "Install",
+    "description": "Install 3rd party programs",
+    "show": true,
+    "sub": [
+            {
+                "id": "I0",
+                "description": "Update Application Repository",
+                "command": [
+                    "get_user_continue \"This will update apt\" process_input",
+                    "apt update | show_infobox"
+                    
+                ],
+                "show": true,
+                "requirements": [""]
+            }
+            ]
+}, 
         {
             "id": "Help",
             "description": "About this app",
@@ -133,7 +157,7 @@
                     "id": "H0",
                     "description": "About this app. (WIP)",
                     "command": [
-                        "echo \"This script is a bash procedure defined in a JSON file for configuring your Linux system.\" | show_message"
+                        "echo \"This app utilizes a JSON file to facilitate its operations.\" | show_message"
                     ],
                     "show": true,
                     "requirements": [""]

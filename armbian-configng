@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# paths
+bin="$(dirname "$0")" #placeholder
+script_dir="$bin/"
+
+#
+# Load The Bash procedure Objects
+json_file="$script_dir/procedure.json"
+json_data=$(cat "$json_file")
+
+#
+# SET the TUI to whiptail 
+#
+[[ -x "$(command -v whiptail)" ]] && DIALOG="whiptail" || { echo "Try; sudo apt install whiptail" && exit 1 ; }
+
+
+#
+# Load the menu library and Dynamic feature list
+#
+declare -A module_options
+
+source "$script_dir"config.its.sh
+
+for key in "${!module_options[@]}"; do
+    options["$key"]="${module_options[$key]}"
+done
+
+
+#
+# Dynamic Menu item handeling, Show hide and edit/append items stream 
+#
+source "$script_dir"example.sh && shift ;
+
+
+#
+# Generate the top menu with the modified JSON data
+while generate_top_menu "$json_data"; do clear ; done;
+
+
+exit 0 ; 

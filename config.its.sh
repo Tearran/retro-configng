@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+
 # Start of apt.dependencies.sh
 
 #
@@ -38,18 +40,20 @@ see_current_apt() {
     local elapsed=$(( now - update ))
 
     if ps -C apt-get,apt,dpkg >/dev/null; then
-        echo "apt-get, apt, or dpkg is currently running."
+        echo "A pkg is running."
+        export running_pkg="true"
         return 1  # The processes are running
     else
-        echo "Continuing, apt, apt-get, or dpkg is not currently running"
+        export running_pkg="false"
+        #echo "apt, apt-get, or dpkg is not currently running"
     fi
     # Check if the package list is up-to-date
     if (( elapsed < day )); then
-        echo "Checking for apt-daily.service"
-        echo "The package lists were last updated $(date -u -d @${elapsed} +"%T") ago."
+        #echo "Checking for apt-daily.service"
+        echo "$(date -u -d @${elapsed} +"%T") ago."
         return 0  # The package lists are up-to-date
     else
-        echo "Checking for apt-daily.service"
+        #echo "Checking for apt-daily.service"
         echo "The package lists are not up-to-date."
         return 1  # The package lists are not up-to-date
     fi
@@ -327,7 +331,7 @@ function see_ping() {
 	# Check for internet connection
 	for server in "${servers[@]}"; do
 	    if ping -q -c 1 -W 1 $server >/dev/null; then
-	        echo "Internet connection is present."
+	        echo "Internet connection: Present"
 			break
 	    else
 	        echo "Internet connection: Failed"
@@ -642,7 +646,7 @@ function generate_menu() {
         IFS= read -r description
         submenu_options+=("$id" "  -  $description")
     done < <(jq -r --arg parent_id "$parent_id" '.menu[] | select(.id==$parent_id) | .sub[]? | select(.show==true) | "\(.id)\n\(.description)"' <<< "$json_data")
-    set_colors 2 # "$?"
+
 
     local OPTION=$($DIALOG --title "Menu" --menu "Choose an option" 0 80 9 "${submenu_options[@]}" \
                             --ok-button Select --cancel-button Back 3>&1 1>&2 2>&3)
@@ -1066,10 +1070,12 @@ function edit_file() {
     if [ -z "$editor" ]; then
         echo "No suitable editor found."
         return 1
+    else
+        # Open the file with the editor
+        $editor "$file"
+        return 0
     fi
 
-    # Open the file with the editor
-    sudo $editor "$file"
 }
 
 
@@ -1090,7 +1096,7 @@ function edit_file() {
 
 
 module_options+=(
-["desktop_keyboard,feature"]="serve_doc"
+["desktop_keyboard,feature"]="desktop_keyboard"
 ["desktop_keyboard,desc"]="Set User desktop keyboard layout (no sudo)"
 ["desktop_keyboard,example"]="desktop_keyboard"
 )
@@ -1115,4 +1121,7 @@ desktop_keyboard() {
         echo "setxkbmap -layout $layout" >> ~/.xinitrc
         zenity --info --text "Command to set keyboard layout to $layout has been added to ~/.xinitrc"
     fi
+    return 0
 }
+
+
